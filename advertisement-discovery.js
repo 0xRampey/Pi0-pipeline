@@ -1,10 +1,14 @@
 var noble = require('noble');
 var async = require('async');
+var fs = require('fs');
 
 // Keep a list of known peripherals
 known_peripherals = ['OnePlus 3']
 
+// Heartbeat rate
 service_list = [ '180d' ]
+
+DATA_DIRECTORY = './Recorded_data/'
 
 noble.on('stateChange', function(state) {
   if (state === 'poweredOn') {
@@ -49,8 +53,8 @@ noble.on('discover', function(peripheral) {
   }
 
   console.log();
+
   extract_data(peripheral)
-  console.log(service_list)
 }
 });
 
@@ -64,49 +68,112 @@ function extract_data(peripheral) {
   peripheral.connect(function(error) {
 
     peripheral.discoverServices(service_list, function(err, services) {
+      var serviceIndex = 0;
+
+      async.whilst(
+        function () {
+          return (serviceIndex < services.length);
+        },
+        function(callback) {
+          var service = services[serviceIndex];
+          var serviceInfo = service.uuid;
+
+          // This must be the service we were looking for.
+          // Lets setup a timestamp to mark the moment this service data
+          // was accessed
+
+          // Timestamp has a 1-second resolution right now
+          timestamp = (new Date()).toLocaleString();
+
+          // Let's also take the opportunity to setup a folder for this service
+          // if it isn't already there
+
+          service_folder = DATA_DIRECTORY + service.name
 
 
-      console.log("Total no of services ", services.length)
-      services.forEach(function(service) {
-        //
-        // This must be the service we were looking for.
-        //
-        console.log('found service:', service.uuid);
+          // One-time synchronous operation for each service encountered
+          if (!fs.existsSync(service_folder)){
+            fs.mkdirSync(service_folder);
+          }
 
-        //
-        // So, discover its characteristics.
-        //
-        service.discoverCharacteristics([], function(err, characteristics) {
+          service.discoverCharacteristics([], function(error, characteristics) {
+            var characteristicIndex = 0;
 
-          characteristics.forEach(function(characteristic) {
-            //
-            // Loop through each characteristic and match them to the
-            // UUIDs that we know about.
-            //
-            console.log('found characteristic:', characteristic.uuid);
+            async.whilst(
+              function () {
+                return (characteristicIndex < characteristics.length);
+              },
+              function(callback) {
+                var characteristic = characteristics[characteristicIndex];
+                var characteristicInfo = '  ' + characteristic.uuid;
 
-            
-          })
-        })
-      })
-    })
-  })
+                char_folder = service_folder + '/' + characteristic.name
+
+                // One-time synchronous operation for each characteristic encountered
+                if (!fs.existsSync(char_folder)){
+                  fs.mkdirSync(char_folder);
+                }
+
+                async.series([
+                  function(callback) {
+
+                    if (characteristic.properties.indexOf('read') !== -1) {
+                      characteristic.read(function(error, data) {
+                        if (data) {
+                          file_path = char_folder + '/' + timestamp
+                          var string = data.toString('hex');
+                          writeToDisk(string, file_path)
+                        }
+                        callback();
+                      });
+                    } else {
+                      callback();
+                    }
+                  },
+                  function() {
+                    console.log(characteristicInfo);
+                    characteristicIndex++;
+                    callback();
+                  }
+                ]);
+              },
+              function(error) {
+                serviceIndex++;
+                callback();
+              }
+            );
+          });
+        },
+        function (err) {
+          peripheral.disconnect();
+        }
+      );
+    });
+  });
+}
+
+
+function writeToDisk(data, file_path) {
+
+  var wstream = fs.createWriteStream(file_path);
+  wstream.on('finish', function () {
+    console.log( file_path +' has been written');
+  });
+  wstream.write(data);
+  wstream.end();
+
 }
 
 function explore(peripheral) {
   console.log('services and characteristics:');
 
   peripheral.on('disconnect', function() {
-    console.log("Peripheral disconnected!")
     process.exit(0);
   });
 
   peripheral.connect(function(error) {
-    console.log("Connecting to device....")
     peripheral.discoverServices([], function(error, services) {
-      console.log("Discovering services....")
       var serviceIndex = 0;
-      console.log("Total no of services ", services.length)
 
       async.whilst(
         function () {
@@ -137,34 +204,32 @@ function explore(peripheral) {
                 }
 
                 async.series([
-                  // This function is to pick out the descriptors in each characteristic
-                  // function(callback) {
-                  //   characteristic.discoverDescriptors(function(error, descriptors) {
-                  //     async.detect(
-                  //       // Detect the first desciptor which matches the UUID of 2901
-                  //       descriptors,
-                  //       function(descriptor, callback) {
-                  //         if (descriptor.uuid === '2901') {
-                  //           return callback(descriptor);
-                  //         } else {
-                  //           return callback();
-                  //         }
-                  //       },
-                  //       function(userDescriptionDescriptor){
-                  //         if (userDescriptionDescriptor) {
-                  //           userDescriptionDescriptor.readValue(function(error, data) {
-                  //             if (data) {
-                  //               characteristicInfo += ' (' + data.toString() + ')';
-                  //             }
-                  //             callback();
-                  //           });
-                  //         } else {
-                  //           callback();
-                  //         }
-                  //       }
-                  //     );
-                  //   });
-                  // },
+                  function(callback) {
+                    characteristic.discoverDescriptors(function(error, descriptors) {
+                      async.detect(
+                        descriptors,
+                        function(descriptor, callback) {
+                          if (descriptor.uuid === '2901') {
+                            return callback(descriptor);
+                          } else {
+                            return callback();
+                          }
+                        },
+                        function(userDescriptionDescriptor){
+                          if (userDescriptionDescriptor) {
+                            userDescriptionDescriptor.readValue(function(error, data) {
+                              if (data) {
+                                characteristicInfo += ' (' + data.toString() + ')';
+                              }
+                              callback();
+                            });
+                          } else {
+                            callback();
+                          }
+                        }
+                      );
+                    });
+                  },
                   function(callback) {
                         characteristicInfo += '\n    properties  ' + characteristic.properties.join(', ');
 
@@ -202,5 +267,7 @@ function explore(peripheral) {
     });
   });
 }
+
+
 
 
