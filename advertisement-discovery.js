@@ -83,7 +83,7 @@ function extract_data(peripheral) {
           // was accessed
 
           // Timestamp has a 1-second resolution right now
-          timestamp = (new Date()).toLocaleString();
+          timestamp = getTimestamp();
 
           // Let's also take the opportunity to setup a folder for this service
           // if it isn't already there
@@ -152,6 +152,14 @@ function extract_data(peripheral) {
   });
 }
 
+function getTimestamp()
+{
+  var d = new Date();
+
+  var datestring = d.getDate()  + "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " +
+d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
+  return datestring
+}
 
 function writeToDisk(data, file_path) {
 
