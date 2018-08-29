@@ -1,0 +1,24 @@
+{
+  "name": "pi0-pipeline",
+  "version": "1.0.0",
+  "description": " Data collection pipeline for the Raspberry Pi Zero ",
+  "main": "advertisement-discovery.js",
+  "dependencies": {
+    "async": "^2.6.1",
+    "noble": "^1.9.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prampey/Pi0-pipeline.git"
+  },
+  "author": "Prudhvi Rampey, Calvin Phung",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prampey/Pi0-pipeline/issues"
+  },
+  "homepage": "https://github.com/prampey/Pi0-pipeline#readme"
+}
