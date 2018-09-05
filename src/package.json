@@ -2,10 +2,12 @@
   "name": "pi0-pipeline",
   "version": "1.0.0",
   "description": " Data collection pipeline for the Raspberry Pi Zero ",
-  "main": "advertisement-discovery.js",
+  "main": "./src/index.js",
   "dependencies": {
     "async": "^2.6.1",
-    "noble": "^1.9.1"
+    "noble": "^1.9.1",
+    "pubsub-js": "^1.6.1",
+    "rpi-gpio-buttons": "^1.1.0"
   },
   "devDependencies": {},
   "scripts": {
