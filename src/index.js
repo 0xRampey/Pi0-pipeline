@@ -9,6 +9,7 @@ function DemoManager(dispatcher) {
 dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     }
     dispatcher.subscribe('runDemo', this.runDemo)
+    dispatcher.subscribe('ButtonPress', this.onButtonPress)
 }
 
 DemoManager.prototype.runDemo = function(_, demo) {
@@ -16,6 +17,12 @@ DemoManager.prototype.runDemo = function(_, demo) {
     if(demo.name === 'FaceDetectionStandalone') {
         faceDetectionStandalone()
     }
+
+}
+
+DemoManager.prototype.onButtonPress = function (_, meta) {
+
+    console.log("Button pressed! in demo")
 
 }
 

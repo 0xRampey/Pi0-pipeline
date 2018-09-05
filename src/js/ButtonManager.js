@@ -1,15 +1,14 @@
-// var buttons = require('rpi-gpio-buttons')([11, 13]);
+var buttons = require('rpi-gpio-buttons')([8]);
 
 function ButtonManager (dispatcher) {
+    console.log("Button manager up")
     buttons.on('clicked', function (pin) {
-        switch (pin) {
-            // Up button on pin 11 was clicked
-            case 11:
-                dispatcher.publish('ButtonPress')
-                break
-        }
+        console.log("Button click!")
+        dispatcher.publish('ButtonPress')
+        
     });
     buttons.on('pressed', function (pin) {
+        console.log("Button press!")
         dispatcher.publish('LongPress');
     });
 
