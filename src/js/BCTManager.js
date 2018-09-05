@@ -4,23 +4,18 @@ function BCTManager(dispatcher) {
 	dispatcher.subscribe('playText', this.playText)
 }
 
-BCTManager.prototype.playText = function(_, metatext) {
-//	const {spawn} = require('child_process');
+BCTManager.prototype.playText = function(_, metatext){
+	console.log('hi');
+	console.log(metatext);
 	filename = metatext
 	playfile = filename + '.wav'
 	const ls = spawn('espeak', ['-w', playfile, metatext]);
-//	const lz = spawn('aplay', [playfile]);
 
-	ls.stdout.on('data', function(data){
-		console.log(`stdout: ${data}`);
+	ls.stdout.on('close', function(code){
 		const lz = spawn('aplay', [playfile]);
 		lz.stdout.on('data', function(data){
-			console.log(`stdout: $(data)`);
 		});
 	});
-//	lz.stdout.on('data', function(data){
-//		console.log(`stdout: $(data)`);
-//	});	
 }
 
 module.exports = BCTManager
