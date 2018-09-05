@@ -22,3 +22,5 @@ BCTManager.prototype.playText = function(_, metatext) {
 //		console.log(`stdout: $(data)`);
 //	});	
 }
+
+module.exports = BCTManager

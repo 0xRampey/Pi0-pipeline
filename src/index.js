@@ -2,6 +2,7 @@ var events = require('events');
 var eventEmitter = new events.EventEmitter(); 
 const dispatcher = require('pubsub-js');
 var ButtonManager = require('./js/ButtonManager.js')
+var BCTManager = require('./js/BCTManager.js')
 
 function DemoManager(dispatcher) {
     this.demos = { faceDetectionStandalone: this.faceDetectionStandalone, ObjectDetectionStandalone: null};
@@ -52,8 +53,9 @@ TaskManager.prototype.runTask = function (_, data) {
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 const BtnManager = new ButtonManager(dispatcher)
-dispatcher.publish('runDemo', { name: 'FaceDetectionStandalone'})
-
+const BctManager = new BCTManager(dispatcher)
+dispatcher.publish('runDemo', { name: 'FaceDetectionStandalone'});
+dispatcher.publish('playText', 'talk it like you walk it');
 
 
 
