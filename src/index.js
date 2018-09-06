@@ -10,7 +10,7 @@ function DemoManager(dispatcher) {
 dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     }
     dispatcher.subscribe('runDemo', this.runDemo)
-    dispatcher.subscribe('ButtonPress', this.onButtonPress)
+    dispatcher.subscribe('LongPress', this.onLongPress)
 }
 
 DemoManager.prototype.runDemo = function(_, demo) {
@@ -21,9 +21,9 @@ DemoManager.prototype.runDemo = function(_, demo) {
 
 }
 
-DemoManager.prototype.onButtonPress = function (_, meta) {
+DemoManager.prototype.onLongPress = function (_, meta) {
 
-    console.log("Button pressed! in demo")
+    console.log("Long press in demo")
 
 }
 
@@ -53,7 +53,7 @@ TaskManager.prototype.runTask = function (_, data) {
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 const BtnManager = new ButtonManager(dispatcher)
-const BctManager = new BCTManager(dispatcher)
+// const BctManager = new BCTManager(dispatcher)
 dispatcher.publish('runDemo', { name: 'FaceDetectionStandalone'});
 dispatcher.publish('playText', 'talk it like you walk it');
 
