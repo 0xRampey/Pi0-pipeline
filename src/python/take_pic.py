@@ -17,6 +17,7 @@ def main():
     #Save pic to a temporary location
     im = Image.fromarray(pic)
     im.save("../tmp/picture.png")
+    camera.close()
 
-main()
+
 

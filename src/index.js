@@ -4,6 +4,7 @@ const dispatcher = require('pubsub-js');
 var ButtonManager = require('./js/ButtonManager.js')
 var BCTManager = require('./js/BCTManager.js')
 
+dispatcher.immediateExceptions = true;
 
 function DemoManager(dispatcher) {
     this.demos = { faceDetectionStandalone: this.faceDetectionStandalone, ObjectDetectionStandalone: null};
@@ -34,17 +35,16 @@ var options = {
   mode: 'text',
   pythonPath: 'python3',
   scriptPath: 'python/',
-//   args: ['value1', 'value2', 'value3']
 };
+
 function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detect_objects}
 
-    var pyshell = new PythonShell('python_manager.py', options);
+    pyshell = new PythonShell('python_manager.py', options);
+    pyshell.send("evrv")
     pyshell.on('message', function (message) {
         console.log(message)
     });
-    pyshell.send('hello')
-    pyshell.send('hello3')
     pyshell.on('close', function () {
         console.log("Manager closed!")
     })
@@ -53,32 +53,24 @@ function TaskManager(dispatcher) {
         console.log("recognising faces")
     }
 
-    takePicture = function() {
-        var pyshell = new PythonShell('take_pic.py', options);
-        pyshell.on('message', function (message) {
-            console.log(message)
-        });
-        pyshell.on('close', function () {
-            console.log("Picture taken!")
-        })
-        // PythonShell.run('./python/take_pic.py', function (err) {
-        //     if (err) throw err;
-        //     console.log('finished');
-        // });
-
+    this.takePicture = function() {
+        console.log("Sending message to pyshell now")
+        pyshell.send('takePicture')
     }
 
     detect_objects = function () {
         console.log("detecting objects")
     }
     dispatcher.subscribe('runTask', this.runTask)
+    dispatcher.subscribe('LongPress', this.takePicture)
 }
 
 TaskManager.prototype.runTask = function (_, data) {
+    console.log("Going to run a task!")
     if(data.name === 'face_recognize') {
         this.recognizeFace();
     }
-    if (data.name === 'object_detect') {
+    if (dasta.name === 'object_detect') {
         this.detect_objects()
     }
     if (data.name === 'takePicture') {
@@ -88,11 +80,12 @@ TaskManager.prototype.runTask = function (_, data) {
     
 }
 
+
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 const BtnManager = new ButtonManager(dispatcher)
 // const BctManager = new BCTManager(dispatcher)
-dispatcher.publish('runTask', { name: 'takePicture'});
+// dispatcher.publish('runTask', { name: 'takePicture'});
 // dispatcher.publish('playText', 'talk it like you walk it');
 
 

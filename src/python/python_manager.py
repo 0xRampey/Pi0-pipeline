@@ -1,26 +1,29 @@
 import sys
 import select
 import time
+# Importing tasks and all their dependencies during setup time
+import take_pic
 
-def something(line):
+def process(line):
+  if line == "takePicture":
+      print("Executing")
+      take_pic.main()
   print('read input:', line, end='')
   sys.stdout.flush()
 
-
-def something_else():
-  print('no input')
-
-
 # If there's input ready, do something, else do something
 # else. Note timeout is zero so select won't block at all.
-print("Starting to look")
+print("Python manager waiting for stdin")
 while(True):
     line = sys.stdin.readline()
     if line:
-      something(line)
+      sys.stdout.flush()
+      # Remove all spaces present in the line
+      line = "".join(line.split())
+      process(line)
     else:  # an empty line means stdin has been closed
       print('eof')
-      exit(0)   
+      exit(0)    
 
 #   else:
 #     something_else()
