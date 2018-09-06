@@ -4,6 +4,7 @@ const dispatcher = require('pubsub-js');
 var ButtonManager = require('./js/ButtonManager.js')
 var BCTManager = require('./js/BCTManager.js')
 
+
 function DemoManager(dispatcher) {
     this.demos = { faceDetectionStandalone: this.faceDetectionStandalone, ObjectDetectionStandalone: null};
     faceDetectionStandalone = function() {        
@@ -27,11 +28,34 @@ DemoManager.prototype.onLongPress = function (_, meta) {
 
 }
 
+
+var PythonShell = require('python-shell');
+var options = {
+  mode: 'text',
+  pythonPath: 'python3',
+  scriptPath: 'python/',
+//   args: ['value1', 'value2', 'value3']
+};
 function TaskManager(dispatcher) {
-    this.tasks={ "face_recognize": this.recognize_face, "object_detect": this.detect_objects}
+    this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detect_objects}
 
     recognizeFace = function () {
         console.log("recognising faces")
+    }
+
+    takePicture = function() {
+        var pyshell = new PythonShell('take_pic.py', options);
+        pyshell.on('message', function (message) {
+            console.log(message)
+        });
+        pyshell.on('close', function () {
+            console.log("Picture taken!")
+        })
+        // PythonShell.run('./python/take_pic.py', function (err) {
+        //     if (err) throw err;
+        //     console.log('finished');
+        // });
+
     }
 
     detect_objects = function () {
@@ -47,6 +71,10 @@ TaskManager.prototype.runTask = function (_, data) {
     if (data.name === 'object_detect') {
         this.detect_objects()
     }
+    if (data.name === 'takePicture') {
+        console.log("Time to take a picture")
+        this.takePicture()
+    }
     
 }
 
@@ -54,8 +82,8 @@ const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 const BtnManager = new ButtonManager(dispatcher)
 // const BctManager = new BCTManager(dispatcher)
-dispatcher.publish('runDemo', { name: 'FaceDetectionStandalone'});
-dispatcher.publish('playText', 'talk it like you walk it');
+dispatcher.publish('runTask', { name: 'takePicture'});
+// dispatcher.publish('playText', 'talk it like you walk it');
 
 
 
