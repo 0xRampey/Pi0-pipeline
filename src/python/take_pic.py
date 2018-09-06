@@ -16,8 +16,7 @@ def main():
     camera.capture(pic, format="rgb")
     #Save pic to a temporary location
     im = Image.fromarray(pic)
-    im.save("../../tmp/picture.png")
+    im.save("../tmp/picture.png")
 
-if __name__ = 'main':
-    main()
+main()
 
