@@ -39,6 +39,16 @@ var options = {
 function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detect_objects}
 
+    var pyshell = new PythonShell('python_manager.py', options);
+    pyshell.on('message', function (message) {
+        console.log(message)
+    });
+    pyshell.send('hello')
+    pyshell.send('hello3')
+    pyshell.on('close', function () {
+        console.log("Manager closed!")
+    })
+
     recognizeFace = function () {
         console.log("recognising faces")
     }
