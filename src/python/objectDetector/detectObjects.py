@@ -169,16 +169,8 @@ def main():
         # Display the frame for 5ms, and close the window so that the next
         # frame can be displayed. Close the window if 'q' or 'Q' is pressed.
         if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
-            break
-    # print("while loop stopped")
-    # graph.DeallocateGraph()
-    # device.CloseDevice()
-    # print("Releasing camera!")
-    # camera.close()
-    # print("No problem with camera")
-    # return    
-        
-
+            break   
+    
     close_ncs_device( device, graph, camera )
     print("All resources released")
 
