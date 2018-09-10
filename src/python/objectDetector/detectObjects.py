@@ -18,6 +18,8 @@ import picamera
 
 import mvnc.mvncapi as mvnc
 
+import threading
+
 from objectDetector.utils import visualize_output
 from objectDetector.utils import deserialize_output
 
@@ -124,11 +126,13 @@ def infer_image( graph, img, frame, labels ):
 
 # ---- Step 5: Unload the graph and close the device -------------------------
 
-def close_ncs_device( device, graph ):
+def close_ncs_device( device, graph, camera ):
     graph.DeallocateGraph()
     device.CloseDevice()
-    camera.release()
-    cv2.destroyAllWindows()
+    print("Releasing camera!")
+    camera.close()
+    # print("DEstroying all windows!")
+    # cv2.destroyAllWindows()
 
 # ---- Main function (entry point for this script ) --------------------------
 
@@ -149,8 +153,12 @@ def main():
     device = open_ncs_device()
     graph = load_graph( device )
 
+    #Get reference to current thread running this task
+    thread = threading.currentThread()
+
     # Main loop: Capture live stream & send frames to NCS
-    while( True ):
+    while(getattr(thread, "run_state")):
+        print(thread.run_state)
         frame = numpy.empty((480, 640, 3), dtype=numpy.uint8)
         print("Capturing image.")
         # Grab a single frame of video from the RPi camera as a np array
@@ -162,8 +170,17 @@ def main():
         # frame can be displayed. Close the window if 'q' or 'Q' is pressed.
         if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
             break
+    # print("while loop stopped")
+    # graph.DeallocateGraph()
+    # device.CloseDevice()
+    # print("Releasing camera!")
+    # camera.close()
+    # print("No problem with camera")
+    # return    
+        
 
-    close_ncs_device( device, graph )
+    close_ncs_device( device, graph, camera )
+    print("All resources released")
 
 # ---- Define 'main' function as the entry point for this script -------------
 
@@ -209,4 +226,5 @@ def parseArgs():
 
 if __name__ == "__main__":
     main()
+    sys.exit()
 # ==== End of file ===========================================================
