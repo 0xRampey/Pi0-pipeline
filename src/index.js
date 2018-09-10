@@ -1,5 +1,4 @@
-var events = require('events');
-var eventEmitter = new events.EventEmitter(); 
+
 const dispatcher = require('pubsub-js');
 var ButtonManager = require('./js/ButtonManager.js')
 var BCTManager = require('./js/BCTManager.js')
@@ -8,6 +7,8 @@ dispatcher.immediateExceptions = true;
 
 function DemoManager(dispatcher) {
     this.demos = { faceDetectionStandalone: this.faceDetectionStandalone, objectDetectionStandalone: this.objectDetectionStandalone};
+    this.state = { demoRunning: false, demoSelected: null }
+
     faceDetectionStandalone = function() {        
 dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     }
@@ -16,29 +17,30 @@ dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
         dispatcher.publish('runTask', { name: 'objectDetection', mode: 'single' });
     }
 
-    this.runDemo = function (_, demo) {
-        console.log("Got request to run demo", demo)
+    this.runDemo = function () {
+        console.log("Got request to run demo")
+        objectDetectionStandalone()
+    }
 
-        if (demo.name === 'FaceDetectionStandalone') {
-            this.faceDetectionStandalone()
+    onLongPress = function (_, meta) {
+        console.log(this)
+        this.state.demoRunning = !(this.state.demoRunning)
+        if (this.state.demoRunning) {
+            this.runDemo()
         }
-        if (demo.name === 'objectDetectionStandalone') {
-            objectDetectionStandalone()
+        else {
+            dispatcher.publish("stopTask")
         }
 
     }
 
     dispatcher.subscribe('runDemo', this.runDemo)
-    dispatcher.subscribe('LongPress', this.onLongPress)
+    dispatcher.subscribe('LongPress', onLongPress.bind(this))
 }
 
 
 
-DemoManager.prototype.onLongPress = function (_, meta) {
 
-    console.log("Long press in demo")
-
-}
 
 
 var PythonShell = require('python-shell');
@@ -51,7 +53,7 @@ var options = {
 
 function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detectObjects}
-
+    this.state = { demoRunning: false }
     pyshell = new PythonShell('python_manager.py', options);
     pyshell.send("evrv")
     pyshell.on('message', function (message) {
@@ -70,7 +72,7 @@ function TaskManager(dispatcher) {
         console.log("recognising faces")
     }
 
-    this.takePicture = function() {
+    takePicture = function() {
         console.log("Sending message to pyshell now")
         pyshell.send('takePicture')
     }
@@ -94,8 +96,14 @@ function TaskManager(dispatcher) {
         }
 
     }
+
+    stopTask = function () {
+        console.log("GOing to sto ptasks")
+        pyshell.send("stopTask")
+    }
+    dispatcher.subscribe('stopTask', stopTask)
     dispatcher.subscribe('runTask', runTask)
-    dispatcher.subscribe('LongPress', this.takePicture)
+    
 }
 
 
@@ -104,27 +112,15 @@ function TaskManager(dispatcher) {
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 const BtnManager = new ButtonManager(dispatcher)
+
+dispatcher.subscribe('LongPress', function() {
+    console.log("Long press!!")
+})
 // const BctManager = new BCTManager(dispatcher)
-dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
+// dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
+// dispatcher.publish('runTask', { name: 'takePicture' });
 // dispatcher.publish('playText', 'talk it like you walk it');
 
 
-
-
-
-// class MyEmitter extends events.EventEmitter { }
-
-// const myEmitter = new MyEmitter();
-// myEmitter.on('event', () => {
-//     console.log('an event occurred!');
-// });
-
-// var picEventHandler = function () {
-//     console.log("Time to take a picture!")
-// }
-
-// eventEmitter.on('event', picEventHandler);
-
-// myEmitter.emit('event');
 
 
