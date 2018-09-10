@@ -23,7 +23,6 @@ dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     }
 
     onLongPress = function (_, meta) {
-        console.log(this)
         this.state.demoRunning = !(this.state.demoRunning)
         if (this.state.demoRunning) {
             this.runDemo()
@@ -54,13 +53,15 @@ var options = {
 function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detectObjects}
     this.state = { demoRunning: false }
+
+    //Spawn a python process to be ready to run tasks 
     pyshell = new PythonShell('python_manager.py', options);
-    pyshell.send("evrv")
+    pyshell.send("Test signal")
     pyshell.on('message', function (message) {
         console.log(message)
     });
     pyshell.on('close', function () {
-        console.log("Manager closed!")
+        console.log("Python manager has closed!")
     })
 
     pyshell.on('error', function (error){
@@ -98,7 +99,7 @@ function TaskManager(dispatcher) {
     }
 
     stopTask = function () {
-        console.log("GOing to sto ptasks")
+        console.log("Signalling to pyshell to stop current task")
         pyshell.send("stopTask")
     }
     dispatcher.subscribe('stopTask', stopTask)
@@ -113,9 +114,6 @@ const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 const BtnManager = new ButtonManager(dispatcher)
 
-dispatcher.subscribe('LongPress', function() {
-    console.log("Long press!!")
-})
 // const BctManager = new BCTManager(dispatcher)
 // dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
 // dispatcher.publish('runTask', { name: 'takePicture' });
