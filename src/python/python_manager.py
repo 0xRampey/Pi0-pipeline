@@ -10,7 +10,7 @@ import take_pic
 from objectDetector import detectObjects 
 from multiprocessing import Process
 
-t = None;
+t = None
 
 def processLines(line):
   print('read input:', line)
@@ -47,14 +47,23 @@ while(True):
         process = Process(target=take_pic.main())
         process.start()
       elif line == "detectObjects":
-        t = threading.Thread(target=doit, args=("task",))
-        t.start()
-        print("Process has started")
-      elif line == "stopTask":
-        print("Definitely stopping!")
         print(t)
-        if(t):
-          t.do_run = False
+        if not t:
+          t = threading.Thread(target=detectObjects.main)
+          t.run_state = True
+          t.start()
+          print(t)
+          print("Process has started")
+        else:
+          print("THread already running!")
+      elif line == "stopTask":
+        print("Received stopTask signal")
+        print(t)
+        if (t):
+          print("Activating stop flag")
+          t.run_state = False
+          print(t)
+          t = None
     else:  # an empty line means stdin has been closed
       print('eof')
       exit(0)    
