@@ -2,49 +2,57 @@ var StateMachine = require('javascript-state-machine');
 
 function DemoManager(dispatcher) {
 
+    this.dispatcher = dispatcher
     // Initialize Finite state machine for Demo Manager
     this._fsm();
     this.demos = { 'faceRecognitionStandalone': this.faceRecognitionStandalone, 'objectDetectionStandalone': this.objectDetectionStandalone};
     // Let default demo be Object detection
-    this.demoSelected = demos['objectDetectionStandalone']
+    this.demoSelected = this.demos['objectDetectionStandalone']
     // this.state = { demoRunning: false, demoSelected: null }
+    
+    dispatcher.subscribe('runDemo', this.runDemo.bind(this))
+    dispatcher.subscribe('LongPress', this.onLongPress.bind(this))
+}
 
-    faceRecognitionStandalone = function() {        
-dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
-    }
-
-    objectDetectionStandalone = function () {
-        dispatcher.publish('runTask', { name: 'objectDetection', mode: 'single' });
-    }
-
-    runDemo = function () {
-        console.log("Got request to run demo")
-        demoSelected()
-    }
-
-    onLongPress = function (_, meta) {
+DemoManager.prototype = {
+    faceRecognitionStandalone : function () {
+            dispatcher.publish('runTask', {
+                name: 'face_recognize',
+                mode: 'single'
+            });
+        },
+    onLongPress : function (_, meta) {
         //Perform state transition
         this.longpress()
         if (this.state === 'ContinuousDetection') {
             this.runDemo()
-        }
-        else {
-            dispatcher.publish("stopTask")
+        } else {
+            this.dispatcher.publish("stopTask")
         }
 
-    }
+    },
+    objectDetectionStandalone : function () {
+        this.dispatcher.publish('runTask', {
+            name: 'objectDetection',
+            mode: 'single'
+        });
+    },
 
-    onClick = function() {
+    runDemo : function () {
+        console.log("Got request to run demo")
+        this.demoSelected()
+    },
+
+    onClick : function () {
         this.click()
-        if(this.state === 'OneTimeRunning') {
+        if (this.state === 'OneTimeRunning') {
             console.log("Activate one time object detection!")
         }
     }
 
-    dispatcher.subscribe('runDemo', runDemo.bind(this))
-    dispatcher.subscribe('LongPress', onLongPress.bind(this))
 }
 
+// Apply state graph
 StateMachine.factory(DemoManager, {
     init: 'OneTimeDetection',
     transitions: [
