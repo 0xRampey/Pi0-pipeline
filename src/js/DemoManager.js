@@ -2,11 +2,14 @@ var StateMachine = require('javascript-state-machine');
 
 function DemoManager(dispatcher) {
 
+    // Initialize Finite state machine for Demo Manager
     this._fsm();
-    this.demos = { faceDetectionStandalone: this.faceDetectionStandalone, objectDetectionStandalone: this.objectDetectionStandalone};
+    this.demos = { 'faceRecognitionStandalone': this.faceRecognitionStandalone, 'objectDetectionStandalone': this.objectDetectionStandalone};
+    // Let default demo be Object detection
+    this.demoSelected = demos['objectDetectionStandalone']
     // this.state = { demoRunning: false, demoSelected: null }
 
-    faceDetectionStandalone = function() {        
+    faceRecognitionStandalone = function() {        
 dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     }
 
@@ -14,9 +17,9 @@ dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
         dispatcher.publish('runTask', { name: 'objectDetection', mode: 'single' });
     }
 
-    this.runDemo = function () {
+    runDemo = function () {
         console.log("Got request to run demo")
-        objectDetectionStandalone()
+        demoSelected()
     }
 
     onLongPress = function (_, meta) {
@@ -31,7 +34,14 @@ dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
 
     }
 
-    dispatcher.subscribe('runDemo', this.runDemo)
+    onClick = function() {
+        this.click()
+        if(this.state === 'OneTimeRunning') {
+            console.log("Activate one time object detection!")
+        }
+    }
+
+    dispatcher.subscribe('runDemo', runDemo.bind(this))
     dispatcher.subscribe('LongPress', onLongPress.bind(this))
 }
 
