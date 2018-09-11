@@ -1,6 +1,10 @@
+var StateMachine = require('javascript-state-machine');
+
 function DemoManager(dispatcher) {
+
+    this._fsm();
     this.demos = { faceDetectionStandalone: this.faceDetectionStandalone, objectDetectionStandalone: this.objectDetectionStandalone};
-    this.state = { demoRunning: false, demoSelected: null }
+    // this.state = { demoRunning: false, demoSelected: null }
 
     faceDetectionStandalone = function() {        
 dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
@@ -16,8 +20,9 @@ dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     }
 
     onLongPress = function (_, meta) {
-        this.state.demoRunning = !(this.state.demoRunning)
-        if (this.state.demoRunning) {
+        //Perform state transition
+        this.longpress()
+        if (this.state === 'ContinuousDetection') {
             this.runDemo()
         }
         else {
@@ -29,5 +34,33 @@ dispatcher.publish('runTask', {name: 'face_recognize', mode: 'single'});
     dispatcher.subscribe('runDemo', this.runDemo)
     dispatcher.subscribe('LongPress', onLongPress.bind(this))
 }
+
+StateMachine.factory(DemoManager, {
+    init: 'OneTimeDetection',
+    transitions: [
+        {
+            name: 'longpress',
+            from: 'OneTimeDetection',
+            to: 'ContinuousDetection'
+        },
+        {
+            name: 'longpress',
+            from: 'ContinuousDetection',
+            to: 'OneTimeDetection'
+        },
+        {
+            name: 'click',
+            from: 'OneTimeDetection',
+            to: 'OneTimeRunning'
+        },
+        {
+            name: 'click',
+            from: 'OneTimeRunning',
+            to: 'OneTimeDetection'
+        }
+        
+    ]
+});
+
 
 module.exports = DemoManager

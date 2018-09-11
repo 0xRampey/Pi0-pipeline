@@ -5,6 +5,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "async": "^2.6.1",
+    "javascript-state-machine": "^3.1.0",
     "noble": "^1.9.1",
     "pubsub-js": "^1.6.1",
     "python-shell": "0.5.0",
