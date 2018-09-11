@@ -11,8 +11,11 @@ pids
 *.seed
 *.pid.lock
 
+# Pycache
 src/python/__pycache__
 src/python/__pycache__/*
+python/objectDetector/__pycache__
+python/objectDetector/utils/__pycache__/
 
 # Coverage directory used by tools like istanbul
 coverage
