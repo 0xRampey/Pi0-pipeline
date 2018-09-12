@@ -12,15 +12,17 @@ function DemoManager(dispatcher) {
     
     dispatcher.subscribe('runDemo', this.runDemo.bind(this))
     dispatcher.subscribe('LongPress', this.onLongPress.bind(this))
+    dispatcher.subscribe('Click', this.onClick.bind(this))
 }
 
 DemoManager.prototype = {
-    faceRecognitionStandalone : function () {
+    faceRecognitionStandalone : function (mode) {
             dispatcher.publish('runTask', {
                 name: 'face_recognize',
-                mode: 'single'
+                mode: mode
             });
         },
+        
     onLongPress : function (_, meta) {
         //Perform state transition
         this.longpress()
@@ -31,26 +33,28 @@ DemoManager.prototype = {
         }
 
     },
-    objectDetectionStandalone : function () {
+    objectDetectionStandalone : function (mode) {
         this.dispatcher.publish('runTask', {
             name: 'objectDetection',
-            mode: 'single'
+            mode: mode
         });
     },
 
-    runDemo : function () {
+    runDemo : function (mode) {
         console.log("Got request to run demo")
-        this.demoSelected()
+        this.demoSelected(mode)
     },
 
     onClick : function () {
-        this.click()
-        if (this.state === 'OneTimeRunning') {
+        // If not in the right state, do not do anything
+        if (this.state == "OneTimeDetection")
+        {
             console.log("Activate one time object detection!")
+            this.runDemo('single')
+        }
         }
     }
 
-}
 
 // Apply state graph
 StateMachine.factory(DemoManager, {
@@ -66,16 +70,6 @@ StateMachine.factory(DemoManager, {
             from: 'ContinuousDetection',
             to: 'OneTimeDetection'
         },
-        {
-            name: 'click',
-            from: 'OneTimeDetection',
-            to: 'OneTimeRunning'
-        },
-        {
-            name: 'click',
-            from: 'OneTimeRunning',
-            to: 'OneTimeDetection'
-        }
         
     ]
 });

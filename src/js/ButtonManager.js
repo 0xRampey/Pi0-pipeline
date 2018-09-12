@@ -2,8 +2,8 @@ var buttons = require('rpi-gpio-buttons')([8]);
 
 buttons.setTiming({
     pressed: 2000, // Longpress for 2 seconds
-    debounced: 1000,
-    clicked: 500
+    // debounced: 1000,
+    // clicked: 500
 });
 
 function ButtonManager (dispatcher) {
