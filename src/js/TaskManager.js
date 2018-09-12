@@ -34,9 +34,9 @@ function TaskManager(dispatcher) {
         pyshell.send('takePicture')
     }
 
-    detectObjects = function () {
+    detectObjects = function (mode) {
         console.log("Sending message to pyshell now")
-        pyshell.send('detectObjects')
+        pyshell.send('detectObjects.'+ mode)
     }
 
     runTask = function (_, data) {
@@ -45,7 +45,7 @@ function TaskManager(dispatcher) {
             this.recognizeFace();
         }
         if (data.name === 'objectDetection') {
-            this.detectObjects()
+            this.detectObjects(data.mode)
         }
         if (data.name === 'takePicture') {
             console.log("Time to take a picture")

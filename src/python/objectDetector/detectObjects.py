@@ -136,7 +136,7 @@ def close_ncs_device( device, graph, camera ):
 
 # ---- Main function (entry point for this script ) --------------------------
 
-def main():
+def main(cont_mode = True):
     global ARGS
     ARGS = parseArgs()
     # Load the labels file
@@ -169,7 +169,9 @@ def main():
         # Display the frame for 5ms, and close the window so that the next
         # frame can be displayed. Close the window if 'q' or 'Q' is pressed.
         if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
-            break   
+            break  
+        if(not cont_mode):
+            break 
     
     close_ncs_device( device, graph, camera )
     print("All resources released")

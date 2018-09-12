@@ -42,12 +42,18 @@ tasks = {"stopTask": stop_task, "takePicture": take_pic.main, "detectObjects": d
   
 
 
-# def doit(arg):
-#     t = threading.currentThread()
-#     while getattr(t, "do_run", True):
-#         print("working on %s" % arg)
-#         time.sleep(1)
-#     print("Stopping as you wish.")
+def processLine(line):
+  # Remove all spaces present in the line
+  line = "".join(line.split())
+  print('read input:', line)
+  command = line.split('.')
+  if(len(command) > 1):
+    task, mode = (command[0], command[1])
+  else:
+    task, mode = (command[0], None)
+  print(task, mode)
+  return (task, mode)
+
 
 # If there's input ready, do something, else do something
 # else. Note timeout is zero so select won't block at all.
@@ -55,19 +61,23 @@ print("Python manager ready to rumble!")
 while(True):
     line = sys.stdin.readline()
     if line:
-      # Remove all spaces present in the line
-      line = "".join(line.split())
-      print('read input:', line)
-      if line in tasks.keys():
-        if line != "stopTask":
-          thread = threading.Thread(target=tasks[line])
+      task, mode = processLine(line)
+      if task in tasks:
+        if task != "stopTask":
+          taskFunc = None
+          if(mode == 'single'):
+            # Set continuous mode flag "off"
+            taskFunc = lambda: tasks[task](False)
+          else:
+            taskFunc = lambda: tasks[task](True)
+          thread = threading.Thread(target=taskFunc)
           thread.run_state = True
           thread.start()
           print(thread)
           print("Process has started", line)
         else:
           print("We got to stop task")
-          tasks[line](thread)
+          tasks[task](thread)
 
       # if line == "takePicture":
       #   process = Process(target=take_pic.main())
