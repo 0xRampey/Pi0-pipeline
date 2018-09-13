@@ -8,7 +8,8 @@ import time
 # Importing tasks and all their dependencies during setup time
 print("Loading task dependencies...")
 import take_pic
-from objectDetector import detectObjects 
+from objectDetector import detectObjects
+from face_matcher import face_matcher 
 # from multiprocessing import Process
 
 #Keeping and managing reference to only one thread at a time
@@ -25,7 +26,10 @@ def stop_task(thread):
     print("No running thread to stop")
 
 #Mapping of tasks to their respective functions
-tasks = {"stopTask": stop_task, "takePicture": take_pic.main, "detectObjects": detectObjects.main}
+tasks = {"stopTask": stop_task, 
+          "takePicture": take_pic.main, 
+          "detectObjects": detectObjects.main,
+          "matchFaces": face_matcher.main}
 # def processLines(line):
 #   print('read input:', line)
 #   if line == "takePicture":

@@ -10,6 +10,7 @@ function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detectObjects}
     this.state = { demoRunning: false }
 
+    console.log("Spawning Python shell...")
     //Spawn a python process to be ready to run tasks 
     pyshell = new PythonShell('python_manager.py', options);
     pyshell.send("Test signal")
@@ -27,6 +28,7 @@ function TaskManager(dispatcher) {
 
     recognizeFace = function () {
         console.log("recognising faces")
+        pyshell.send('matchFaces')
     }
 
     takePicture = function() {

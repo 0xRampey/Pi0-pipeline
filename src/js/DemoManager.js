@@ -7,7 +7,7 @@ function DemoManager(dispatcher) {
     this._fsm();
     this.demos = { 'faceRecognitionStandalone': this.faceRecognitionStandalone, 'objectDetectionStandalone': this.objectDetectionStandalone};
     // Let default demo be Object detection
-    this.demoSelected = this.demos['objectDetectionStandalone']
+    this.demoSelected = this.demos['faceRecognitionStandalone']
     // this.state = { demoRunning: false, demoSelected: null }
     
     dispatcher.subscribe('runDemo', this.runDemo.bind(this))
@@ -17,13 +17,15 @@ function DemoManager(dispatcher) {
 
 DemoManager.prototype = {
     faceRecognitionStandalone : function (mode) {
-            dispatcher.publish('runTask', {
+            this.dispatcher.publish('runTask', {
                 name: 'face_recognize',
                 mode: mode
             });
         },
         
     onLongPress : function (_, meta) {
+        // LongPress required only for object detection
+        if (this.demoSelected == this.demos['objectDetectionStandalone']) {
         //Perform state transition
         this.longpress()
         if (this.state === 'ContinuousDetection') {
@@ -31,6 +33,7 @@ DemoManager.prototype = {
         } else {
             this.dispatcher.publish("stopTask")
         }
+    }
 
     },
     objectDetectionStandalone : function (mode) {
