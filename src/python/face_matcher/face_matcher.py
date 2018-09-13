@@ -194,10 +194,28 @@ def run_face_rec(camera, graph):
               face_enc = run_inference(resized_image, graph)
               face_enc_list.append(face_enc)
 
-            print(predict(face_enc_list, FACE_MATCH_THRESHOLD))
+            prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
+
+            print('playMessage:' + array_to_human(prediction))
 
           else:
-            print("No faces detected!")
+            print("playMessage: No faces detected!")
+
+
+def array_to_human(arr):
+    num_unknown = 0
+    known_faces=""
+    for face in arr:
+        if(face == 'unknown'):
+            num_unknown += 1
+        else:
+            known_faces += face+","
+    if(known_faces):
+        message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
+    else:
+        message = "I only found %d unknown faces" % (num_unknown)
+    return message
+
 
 
 def initCamera():

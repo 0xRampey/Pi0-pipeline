@@ -16,6 +16,12 @@ function TaskManager(dispatcher) {
     pyshell.send("Test signal")
     pyshell.on('message', function (message) {
         console.log(message)
+        //Look for play messages so that they can be sent to BCTManager
+        if (message.startsWith('playMessage:')) {
+            dispatcher.publish('playText', message)
+        }
+
+
     });
     pyshell.on('close', function () {
         console.log("Python manager has closed!")
