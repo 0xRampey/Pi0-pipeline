@@ -4,6 +4,7 @@ var ButtonManager = require('./js/ButtonManager.js')
 var BCTManager = require('./js/BCTManager.js')
 var DemoManager = require('./js/DemoManager.js')
 var TaskManager = require('./js/TaskManager.js')
+var BluetoothManager = require('./js/BluetoothManager.js')
 
 // Let dispatcher submit any exceptions immediately
 dispatcher.immediateExceptions = true;
