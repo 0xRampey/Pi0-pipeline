@@ -73,10 +73,10 @@ function BluetoothManager(dispatcher){
 					} else {
 						console.log(stdout);
 						if(stdout =='FaceDetectionActivity'){
-							dispatcher.publish(stdout);
+							dispatcher.publish("selectDemo", {name: "faceRecognitionStandalone"});
 						}
 						else if(stdout == 'ObjectDetectionActivity'){
-							dispatcher.publish(stdout);
+							dispatcher.publish("selectDemo", {name: "objectDetectionStandalone"});
 						}
 						callback(bleno.Characteristic.RESULT_SUCCESS);
 						terminalResponse = stdout;

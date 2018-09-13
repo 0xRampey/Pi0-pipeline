@@ -13,6 +13,7 @@ function DemoManager(dispatcher) {
     dispatcher.subscribe('runDemo', this.runDemo.bind(this))
     dispatcher.subscribe('LongPress', this.onLongPress.bind(this))
     dispatcher.subscribe('Click', this.onClick.bind(this))
+    //dispatcher.subscribe('FaceDetectionActivity',this.)
 }
 
 DemoManager.prototype = {

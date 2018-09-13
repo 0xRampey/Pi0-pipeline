@@ -16,7 +16,11 @@ const BtnManager = new ButtonManager(dispatcher)
 // const BctManager = new BCTManager(dispatcher)
 // dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
 // dispatcher.publish('runTask', { name: 'takePicture' });
-// dispatcher.publish('playText', 'talk it like you walk it');
+dispatcher.subscribe('demoSelected', test);
+
+function test(event,meta){
+	console.log(meta)
+}
 
 
 
