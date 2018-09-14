@@ -13,10 +13,16 @@ function DemoManager(dispatcher) {
     dispatcher.subscribe('runDemo', this.runDemo.bind(this))
     dispatcher.subscribe('LongPress', this.onLongPress.bind(this))
     dispatcher.subscribe('Click', this.onClick.bind(this))
-    //dispatcher.subscribe('FaceDetectionActivity',this.)
+    dispatcher.subscribe('selectDemo',this.selectDemo.bind(this))
 }
 
 DemoManager.prototype = {
+
+    selectDemo: function(event, meta) {
+        console.log("Demo selected!", meta)
+        this.demoSelected = this.demos[meta.name]
+    },
+
     faceRecognitionStandalone : function (mode) {
             this.dispatcher.publish('runTask', {
                 name: 'face_recognize',

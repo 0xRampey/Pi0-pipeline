@@ -9,9 +9,11 @@ var BluetoothManager = require('./js/BluetoothManager.js')
 // Let dispatcher submit any exceptions immediately
 dispatcher.immediateExceptions = true;
 
+const BtnManager = new ButtonManager(dispatcher)
+const blueManager = new BluetoothManager(dispatcher)
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
-const BtnManager = new ButtonManager(dispatcher)
+
 
 // const BctManager = new BCTManager(dispatcher)
 // dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});

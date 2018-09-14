@@ -4,7 +4,6 @@ var exec = require('child_process').exec;
 var path = require( 'path' );
 var PythonShell = require('python-shell');
 var cp = require('child_process');
-var 
 
 var counter = 0;
 
@@ -28,17 +27,8 @@ var START_CHAR = String.fromCharCode(002); //START OF TEXT CHAR
 var END_CHAR = String.fromCharCode(003);   //END OF TEXT CHAR
 
 var recognitionText;
-const pyScriptPath = './sendToBLE.py';
+
 const jsScriptPath = './firebase_upload.js';
-
-var options = {
-mode: 'text',
-pythonPath: 'python3',
-pythonOptions: ['-u'],
-scriptPath: './',
-};
-
-var pyshell = new PythonShell(pyScriptPath, options);
 
 function sliceUpResponse(callback, responseText) {
   if (!responseText || !responseText.trim()) return;
@@ -64,26 +54,18 @@ function BluetoothManager(dispatcher){
 			} else {
 				var data = newData.toString('utf8');
 				console.log("Command received: [" + data + "]");
-				dir = exec(data, function(err, stdout, stderr) {
-					if (err) {
-						var stringError = JSON.stringify(err);
-						console.log(stringError);
-						callback(bleno.Characteristic.RESULT_SUCCESS);
-						terminalResponse = stringError;
-					} else {
-						console.log(stdout);
-						if(stdout =='FaceDetectionActivity'){
+						if(data =='FaceDetectionActivity'){
 							dispatcher.publish("selectDemo", {name: "faceRecognitionStandalone"});
 						}
-						else if(stdout == 'ObjectDetectionActivity'){
+						else if(data == 'ObjectDetectionActivity'){
 							dispatcher.publish("selectDemo", {name: "objectDetectionStandalone"});
 						}
 						callback(bleno.Characteristic.RESULT_SUCCESS);
-						terminalResponse = stdout;
+						terminalResponse = data;
 					}
 					if (terminalCallback) sliceUpResponse(terminalCallback, terminalResponse);
-				});
-			}
+				
+			
 		},
 		onSubscribe: function(maxValueSize, updateValueCallback) {
 		    console.log("onSubscribe called");
@@ -92,7 +74,7 @@ function BluetoothManager(dispatcher){
 			  // received a message sent from the Python script (a simple "print" statement)
 			  console.log(message);
 			  updateValueCallback(new Buffer(message));
-			});
+			
 	    	
 		},
 		onUnsubscribe: function() {
@@ -141,4 +123,4 @@ function BluetoothManager(dispatcher){
 
 
    
-module.exports = BluetoothManaager
+module.exports = BluetoothManager
