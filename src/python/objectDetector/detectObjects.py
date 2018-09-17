@@ -29,6 +29,7 @@ CONFIDANCE_THRESHOLD = 0.60 # 60% confidant
 ARGS = None
 # OpenCV object for video capture
 camera               = None
+cont_mode = True
 
 # ---- Step 1: Open the enumerated device and get a handle to it -------------
 
@@ -95,11 +96,14 @@ def infer_image( graph, img, frame, labels ):
     print( "I found these objects in "
             + " ( %.2f ms ):" % ( numpy.sum( inference_time ) ) )
 
+    detection_str=""        
+
     for i in range( 0, output_dict['num_detections'] ):
         print( "%3.1f%%\t" % output_dict['detection_scores_' + str(i)] 
                + labels[ int(output_dict['detection_classes_' + str(i)]) ]
                + ": Top Left: " + str( output_dict['detection_boxes_' + str(i)][0] )
                + " Bottom Right: " + str( output_dict['detection_boxes_' + str(i)][1] ) )
+        detection_str += " a %s with %3.1f percent accuracy," % (labels[int(output_dict['detection_classes_' + str(i)])], output_dict['detection_scores_' + str(i)])
 
         # Draw bounding boxes around valid detections 
         (y1, x1) = output_dict.get('detection_boxes_' + str(i))[0]
@@ -119,10 +123,17 @@ def infer_image( graph, img, frame, labels ):
                        color=(255, 255, 0),
                        display_str=display_str )
     print( '\n' )
-
-    # If a display is available, show the image on which inference was performed
-    if 'DISPLAY' in os.environ:
-        cv2.imshow( 'NCS live inference', frame )
+    
+    if(not cont_mode):
+        template_str = "playMessage: I found"
+        if(detection_str):
+            print(template_str + detection_str)
+        else:
+            print(template_str + " no object")
+    else:
+        # If a display is available, show the image on which inference was performed
+        if 'DISPLAY' in os.environ:
+            cv2.imshow( 'NCS live inference', frame )
 
 # ---- Step 5: Unload the graph and close the device -------------------------
 
@@ -131,14 +142,17 @@ def close_ncs_device( device, graph, camera ):
     device.CloseDevice()
     print("Releasing camera!")
     camera.close()
-    # print("DEstroying all windows!")
-    # cv2.destroyAllWindows()
+    print("Destroying all windows!")
+    cv2.destroyAllWindows()
 
 # ---- Main function (entry point for this script ) --------------------------
 
-def main(cont_mode = True):
+def main(continous_mode = True):
     global ARGS
     ARGS = parseArgs()
+
+    global cont_mode
+    cont_mode = continous_mode
     # Load the labels file
     labels = [line.rstrip('\n') for line in
               open(ARGS.labels) if line != 'classes\n']
@@ -158,7 +172,6 @@ def main(cont_mode = True):
 
     # Main loop: Capture live stream & send frames to NCS
     while(getattr(thread, "run_state")):
-        print(thread.run_state)
         frame = numpy.empty((480, 640, 3), dtype=numpy.uint8)
         print("Capturing image.")
         # Grab a single frame of video from the RPi camera as a np array

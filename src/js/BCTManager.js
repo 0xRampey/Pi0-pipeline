@@ -8,7 +8,7 @@ BCTManager.prototype.playText = function(_, metatext){
 	console.log('hi');
 	console.log(metatext);
 	filename = metatext
-	playfile = filename + '.wav'
+	playfile = 'audio/'+ filename + '.wav'
 	const ls = spawn('espeak', ['-w', playfile, metatext]);
 
 	ls.stdout.on('close', function(code){

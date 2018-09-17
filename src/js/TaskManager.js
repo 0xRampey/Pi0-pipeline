@@ -18,6 +18,7 @@ function TaskManager(dispatcher) {
         console.log(message)
         //Look for play messages so that they can be sent to BCTManager
         if (message.startsWith('playMessage:')) {
+            message.replace('playMessage:', "")
             dispatcher.publish('playText', message)
         }
 

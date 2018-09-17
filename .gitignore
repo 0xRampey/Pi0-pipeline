@@ -1,3 +1,12 @@
+#Custom
+src/audio/*
+
+# Pycache
+src/python/__pycache__
+src/python/objectDetector/__pycache__
+src/python/objectDetector/utils/__pycache__
+src/python/face_matcher/__pycache__
+
 # Logs
 logs
 *.log
@@ -10,12 +19,6 @@ pids
 *.pid
 *.seed
 *.pid.lock
-
-# Pycache
-src/python/__pycache__
-src/python/__pycache__/*
-python/objectDetector/__pycache__
-python/objectDetector/utils/__pycache__
 
 # Coverage directory used by tools like istanbul
 coverage

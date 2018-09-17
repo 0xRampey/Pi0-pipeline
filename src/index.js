@@ -14,15 +14,17 @@ const blueManager = new BluetoothManager(dispatcher)
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
 
-
-// const BctManager = new BCTManager(dispatcher)
-// dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
-// dispatcher.publish('runTask', { name: 'takePicture' });
-dispatcher.subscribe('demoSelected', test);
-
-function test(event,meta){
-	console.log(meta)
+// Make BCTManager optional
+try {
+const BctManager = new BCTManager(dispatcher)
 }
+catch(error) {
+	console.log("Seems like BCT not connected. Will disable BCT Manager now.")
+}
+// dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
+// // dispatcher.publish('runTask', { name: 'takePicture' });
+// dispatcher.subscribe('demoSelected', test);
+
 
 
 
