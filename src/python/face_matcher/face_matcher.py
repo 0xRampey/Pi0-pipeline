@@ -168,12 +168,9 @@ def predict(face_encodings, distance_threshold):
 # graph is the ncsdk Graph object initialized with the facenet graph file
 #   which we will run the inference on.
 # returns None
-def run_face_rec(camera, graph):
+def run_face_rec(pic, graph):
 
-          pic = np.empty((240, 320, 3), dtype=np.uint8)
-          print("Capturing image.")
-          # Grab a single frame of video from the RPi camera as a np array
-          camera.capture(pic, format="rgb")
+
 
           print("Performing inference!")
 
@@ -231,7 +228,14 @@ def initCamera():
 # This function is called from the entry point to do
 # all the work of the program
 def main(bool):
-
+    
+    
+    camera = initCamera()
+    pic = np.empty((240, 320, 3), dtype=np.uint8)
+    print("Capturing image.")
+    # Grab a single frame of video from the RPi camera as a np array
+    camera.capture(pic, format="rgb")
+    camera.close()
     # Get a list of ALL the sticks that are plugged in
     # we need at least one
     devices = mvnc.EnumerateDevices()
@@ -257,13 +261,10 @@ def main(bool):
     # create the NCAPI graph instance from the memory buffer containing the graph file.
     graph = device.AllocateGraph(graph_in_memory)
 
-    #Setting up camera and button trigger
-    camera = initCamera()
-
-    run_face_rec(camera, graph)
+    run_face_rec(pic, graph)
 
     # Clean up the graph and the device
-    camera.close()
+    
     graph.DeallocateGraph()
     device.CloseDevice()
 
