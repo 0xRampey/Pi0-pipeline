@@ -1,6 +1,14 @@
 # Pi0-pipeline
 Wearable architecture for the Raspberry Pi Zero
 
+## Get started
+```
+git clone https://github.com/prampey/Pi0-pipeline.git   
+cd Pi0-pipeline/src 
+npm install 
+npm start 
+```  
+
 ## Requirements for BCTManager  
 
 - Change the gpio multiplexing scheme for 13 and 18:  
