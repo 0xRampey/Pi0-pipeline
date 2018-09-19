@@ -14,6 +14,7 @@ import face_recognition
 import pickle
 import time
 import shutil
+import classifier_onboarding
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
 
@@ -149,9 +150,8 @@ def predict(face_encodings, distance_threshold):
     :return: a list of names and face locations for the recognized faces in the image: [(name, bounding box), ...].
         For faces of unrecognized persons, the name 'unknown' will be returned.
     """
-
     with open(MODEL_PATH, 'rb') as f:
-        knn_clf = pickle.load(f)
+            knn_clf = pickle.load(f)
 
     # Use the KNN model to find the best matches for the test face
     closest_distances = knn_clf.kneighbors(face_encodings, n_neighbors=1)
@@ -246,7 +246,7 @@ def add_face():
                 time.sleep(1)
                 print("Picture successfully taken")
             if len(os.listdir("./unknown_faces")) == 1:
-                classifier = on_board_training("./unknown_faces",name=new_name, model_save_path=model_path)
+                classifier = onboarding("./unknown_faces",graph=graph, name=new_name, model_save_path=model_path)
                 move_files()
             break
         elif new_face == 'n':

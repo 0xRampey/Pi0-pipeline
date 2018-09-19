@@ -7,8 +7,10 @@ import sys
 import os.path
 import pickle
 import face_recognition
+import classifier_onboarding
 from face_recognition.face_recognition_cli import image_files_in_folder
 from video_face_matcher import preprocess_image, whiten_image
+
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 GRAPH_FILENAME = "facenet_celeb_ncs.graph"
@@ -43,8 +45,9 @@ def main():
     # create the NCAPI graph instance from the memory buffer containing the graph file.
     graph = device.AllocateGraph(graph_in_memory)
 
+
     print("Training KNN classifier...")
-    classifier = train(KNOWN_IMAGES_DIR, graph=graph, model_save_path="./models/knn_model.clf", n_neighbors=2)
+    classifier = onboarding(KNOWN_IMAGES_DIR, graph=graph, model_save_path="./models/knn_model.clf", n_neighbors=2)
     print("Training complete!")
 
 
