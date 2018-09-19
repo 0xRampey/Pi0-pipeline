@@ -8,7 +8,11 @@ cd Pi0-pipeline/src
 npm install 
 npm start 
 ```  
+## Requirements for Microphone
 
+- Change Audio Device Settings to get better audio capture:  
+ 	- ```GUI: Preferences -> Audio Device Settings -> Sound Card (USB PnP ...), Increase volume to max -> Make Default -> OK``` 
+  
 ## Requirements for BCTManager  
 
 - Change the gpio multiplexing scheme for 13 and 18:  
