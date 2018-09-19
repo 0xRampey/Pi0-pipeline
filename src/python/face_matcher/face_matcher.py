@@ -196,7 +196,7 @@ def run_face_rec(camera, graph):
 
             prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
 
-            print('playMessage:' + array_to_human(prediction))
+            print('playMessage: ' + array_to_human(prediction))
 
           else:
             print("playMessage: No faces detected!")
@@ -204,6 +204,7 @@ def run_face_rec(camera, graph):
 
 def array_to_human(arr):
     num_unknown = 0
+    template = "I found "
     known_faces=""
     for face in arr:
         if(face == 'unknown'):
@@ -211,7 +212,10 @@ def array_to_human(arr):
         else:
             known_faces += face+","
     if(known_faces):
-        message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
+        if(num_unknown):
+            message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
+        else:
+            message = "I found %s" % (known_faces)
     else:
         message = "I only found %d unknown faces" % (num_unknown)
     return message

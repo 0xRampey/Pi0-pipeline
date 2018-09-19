@@ -103,7 +103,8 @@ def infer_image( graph, img, frame, labels ):
                + labels[ int(output_dict['detection_classes_' + str(i)]) ]
                + ": Top Left: " + str( output_dict['detection_boxes_' + str(i)][0] )
                + " Bottom Right: " + str( output_dict['detection_boxes_' + str(i)][1] ) )
-        detection_str += " a %s with %3.1f percent accuracy," % (labels[int(output_dict['detection_classes_' + str(i)])], output_dict['detection_scores_' + str(i)])
+        label = labels[ int(output_dict['detection_classes_' + str(i)]) ].split(':')[1]
+        detection_str += "a%s," % (label)
 
         # Draw bounding boxes around valid detections 
         (y1, x1) = output_dict.get('detection_boxes_' + str(i))[0]
@@ -125,15 +126,16 @@ def infer_image( graph, img, frame, labels ):
     print( '\n' )
     
     if(not cont_mode):
-        template_str = "playMessage: I found"
+        template_str = "playMessage: I found "
         if(detection_str):
             print(template_str + detection_str)
         else:
-            print(template_str + " no object")
+            print(template_str + "no objects.")
     else:
         # If a display is available, show the image on which inference was performed
         if 'DISPLAY' in os.environ:
             cv2.imshow( 'NCS live inference', frame )
+            cv2.waitKey(5)
 
 # ---- Step 5: Unload the graph and close the device -------------------------
 
@@ -178,11 +180,6 @@ def main(continous_mode = True):
         camera.capture(frame, format="bgr")
         img = pre_process_image( frame )
         infer_image( graph, img, frame, labels )
-
-        # Display the frame for 5ms, and close the window so that the next
-        # frame can be displayed. Close the window if 'q' or 'Q' is pressed.
-        if( cv2.waitKey( 5 ) & 0xFF == ord( 'q' ) ):
-            break  
         if(not cont_mode):
             break 
     

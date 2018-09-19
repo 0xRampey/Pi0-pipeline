@@ -14,6 +14,8 @@
   },
   "devDependencies": {},
   "scripts": {
+    "prep": "gpio_alt -p 13 -f 0; gpio_alt -p 18 -f 5; raspi-gpio set 14 pu;",
+    "start": "npm run prep && sudo node index.js", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
