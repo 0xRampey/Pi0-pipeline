@@ -107,7 +107,7 @@ def train(train_dir, graph, model_save_path=None, n_neighbors=None, knn_algo='ba
             else:
                 # Extract the face from the face location
                 face = extract_faces(image, face_bounding_boxes)[0]
-                #Obtain face encoding for the face
+                # Obtain face encoding for the face
                 encoding = run_inference(face, graph)
 
                 # Add face encoding for current image to the training set

@@ -13,6 +13,7 @@ import os
 import face_recognition
 import pickle
 import time
+import shutil
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
 
@@ -170,37 +171,36 @@ def predict(face_encodings, distance_threshold):
 #   which we will run the inference on.
 # returns None
 def run_face_rec(camera, graph):
+      pic = np.empty((240, 320, 3), dtype=np.uint8)
+      print("Capturing image.")
+      # Grab a single frame of video from the RPi camera as a np array
+      camera.capture(pic, format="rgb")
 
-          pic = np.empty((240, 320, 3), dtype=np.uint8)
-          print("Capturing image.")
-          # Grab a single frame of video from the RPi camera as a np array
-          camera.capture(pic, format="rgb")
+      print("Performing inference!")
 
-          print("Performing inference!")
+      #Extract faces found in the image
+      face_locations = get_face_loc(pic)
+      face_images = extract_faces(pic, face_locations)
 
-          #Extract faces found in the image
-          face_locations = get_face_loc(pic)
-          face_images = extract_faces(pic, face_locations)
+      #Perform inference only when when you detect faces
+      if(len(face_images)):
 
-          #Perform inference only when when you detect faces
-          if(len(face_images)):
+        face_enc_list = []
+        for face_idx, face in enumerate(face_images):
+          # get a resized version of the image that is the dimensions
+          # Facenet expects
+          resized_image = preprocess_image(face)
+          # run a single inference on the image and overwrite the
+          # boxes and labels
+          face_enc = run_inference(resized_image, graph)
+          face_enc_list.append(face_enc)
 
-            face_enc_list = []
-            for face_idx, face in enumerate(face_images):
-              # get a resized version of the image that is the dimensions
-              # Facenet expects
-              resized_image = preprocess_image(face)
-              # run a single inference on the image and overwrite the
-              # boxes and labels
-              face_enc = run_inference(resized_image, graph)
-              face_enc_list.append(face_enc)
+        prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
 
-            prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
+        print('playMessage: ' + array_to_human(prediction))
 
-            print('playMessage: ' + array_to_human(prediction))
-
-          else:
-            print("playMessage: No faces detected!")
+      else:
+        print("playMessage: No faces detected!")
 
 
 def array_to_human(arr):
@@ -254,6 +254,19 @@ def add_face():
             break
         else:
             continue
+
+def move_files():
+    print("Training KNN classifier...")
+    if len(os.listdir("./unknown_faces")) == 0:
+        print("Directory is empty")
+        print('Model already exists')
+    else:
+        unknown = os.listdir("./unknown_faces")
+        destination = "./known_faces"
+        for f in unknown:
+            shutil.move("./unknown_faces"+'/'+f, destination)
+            # print(os.path.join(directory, filename))
+        print('All files moved')
 
 def initCamera():
     camera = picamera.PiCamera()
