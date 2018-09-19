@@ -39,9 +39,10 @@ DemoManager.prototype = {
         //Perform state transition
         this.longpress()
         if (this.state === 'ContinuousDetection') {
-            this.runDemo()
+            this.dispatcher.publish('playText', 'Starting continous object detection')
+	    this.runDemo()
         } else {
-	    this.dispatcher.publish('playText', 'Going to stop demo')
+	    this.dispatcher.publish('playText', 'Stopping object detection')
             this.dispatcher.publish("stopTask")
         }
     }
@@ -56,7 +57,6 @@ DemoManager.prototype = {
 
     runDemo : function (mode) {
         console.log("Got request to run demo")
-	this.dispatcher.publish('playText', 'Going to run demo!')
         this.demoSelected(mode)
     },
 
