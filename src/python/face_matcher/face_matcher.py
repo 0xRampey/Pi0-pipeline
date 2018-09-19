@@ -12,12 +12,16 @@ import sys
 import os
 import face_recognition
 import pickle
+import time
+
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
+
 
 BUTTON_GPIO_PIN = 24
 
 MODEL_PATH = 'python/face_matcher/models/knn_model.clf'
+TEST_MODEL_PATH = 'python/face_matcher/models/knn_model2.clf'
 
 CAMERA_INDEX = 0
 REQUEST_CAMERA_WIDTH = 640
@@ -73,9 +77,6 @@ def extract_faces(vid_frame, face_locations):
        # Print the location of each face in this image
       top, right, bottom, left = face_location
       print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
-
-      top, right, bottom, left = new_coord(top, right, bottom, left)
-
 
       # You can access the actual face itself like this:
       face_image = vid_frame[top:bottom, left:right]
@@ -147,9 +148,8 @@ def predict(face_encodings, distance_threshold):
     :return: a list of names and face locations for the recognized faces in the image: [(name, bounding box), ...].
         For faces of unrecognized persons, the name 'unknown' will be returned.
     """
-
     with open(MODEL_PATH, 'rb') as f:
-        knn_clf = pickle.load(f)
+            knn_clf = pickle.load(f)
 
     # Use the KNN model to find the best matches for the test face
     closest_distances = knn_clf.kneighbors(face_encodings, n_neighbors=1)
@@ -169,37 +169,43 @@ def predict(face_encodings, distance_threshold):
 #   which we will run the inference on.
 # returns None
 def run_face_rec(camera, graph):
+      pic = np.empty((240, 320, 3), dtype=np.uint8)
+      print("Capturing image.")
+      # Grab a single frame of video from the RPi camera as a np array
+      camera.capture(pic, format="rgb")
 
-          pic = np.empty((240, 320, 3), dtype=np.uint8)
-          print("Capturing image.")
-          # Grab a single frame of video from the RPi camera as a np array
-          camera.capture(pic, format="rgb")
+      print("Performing inference!")
 
-          print("Performing inference!")
+      #Extract faces found in the image
+      face_locations = get_face_loc(pic)
+      face_images = extract_faces(pic, face_locations)
 
-          #Extract faces found in the image
-          face_locations = get_face_loc(pic)
-          face_images = extract_faces(pic, face_locations)
+      #Perform inference only when when you detect faces
+      if(len(face_images)):
 
-          #Perform inference only when when you detect faces
-          if(len(face_images)):
+        face_enc_list = []
+        for face_idx, face in enumerate(face_images):
+          # get a resized version of the image that is the dimensions
+          # Facenet expects
+          resized_image = preprocess_image(face)
+          # run a single inference on the image and overwrite the
+          # boxes and labels
+          face_enc = run_inference(resized_image, graph)
+          face_enc_list.append(face_enc)
 
-            face_enc_list = []
-            for face_idx, face in enumerate(face_images):
-              # get a resized version of the image that is the dimensions
-              # Facenet expects
-              resized_image = preprocess_image(face)
-              # run a single inference on the image and overwrite the
-              # boxes and labels
-              face_enc = run_inference(resized_image, graph)
-              face_enc_list.append(face_enc)
+        prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
+        processed_pred = array_to_human(prediction)
+        if(processed_pred['known_faces']):
+            print('playRecording: ' + processed_pred['known_faces'])
+            print(processed_pred['known_faces'])
+        # else:
+        #     print('playMessage: ' + processed_pred['message'])
+        
+        if(processed_pred['num_unknown']):
+            print('unknownFaces: bleh')
 
-            prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
-
-            print('playMessage: ' + array_to_human(prediction))
-
-          else:
-            print("playMessage: No faces detected!")
+      else:
+        print("playMessage: No faces detected!")
 
 
 def array_to_human(arr):
@@ -218,9 +224,7 @@ def array_to_human(arr):
             message = "I found %s" % (known_faces)
     else:
         message = "I only found %d unknown faces" % (num_unknown)
-    return message
-
-
+    return { "message": message, "num_unknown": num_unknown, "known_faces": known_faces }
 
 def initCamera():
     camera = picamera.PiCamera()
@@ -270,4 +274,4 @@ def main(bool):
 
 # main entry point for program. we'll call main() to do what needs to be done.
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(True))

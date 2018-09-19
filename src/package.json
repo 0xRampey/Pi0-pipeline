@@ -10,12 +10,13 @@
     "noble": "^1.9.1",
     "pubsub-js": "^1.6.1",
     "python-shell": "0.5.0",
-    "rpi-gpio-buttons": "^1.1.0"
+    "rpi-gpio-buttons": "^1.1.0",
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {},
   "scripts": {
     "prep": "gpio_alt -p 13 -f 0; gpio_alt -p 18 -f 5; raspi-gpio set 14 pu;",
-    "start": "npm run prep && sudo node index.js", 
+    "start": "npm run prep && sudo node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

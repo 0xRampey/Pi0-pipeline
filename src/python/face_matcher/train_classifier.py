@@ -7,8 +7,10 @@ import sys
 import os.path
 import pickle
 import face_recognition
+
 from face_recognition.face_recognition_cli import image_files_in_folder
-from video_face_matcher import preprocess_image, whiten_image
+from face_matcher import preprocess_image, whiten_image
+
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 GRAPH_FILENAME = "facenet_celeb_ncs.graph"
@@ -42,6 +44,7 @@ def main():
     print("Loading graph file into NCS...")
     # create the NCAPI graph instance from the memory buffer containing the graph file.
     graph = device.AllocateGraph(graph_in_memory)
+
 
     print("Training KNN classifier...")
     classifier = train(KNOWN_IMAGES_DIR, graph=graph, model_save_path="./models/knn_model.clf", n_neighbors=2)
@@ -107,7 +110,7 @@ def train(train_dir, graph, model_save_path=None, n_neighbors=None, knn_algo='ba
             else:
                 # Extract the face from the face location
                 face = extract_faces(image, face_bounding_boxes)[0]
-                #Obtain face encoding for the face
+                # Obtain face encoding for the face
                 encoding = run_inference(face, graph)
 
                 # Add face encoding for current image to the training set
@@ -152,7 +155,6 @@ def extract_faces(vid_frame, face_locations):
       print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(
           top, left, bottom, right))
 
-      top, right, bottom, left = new_coord(top, right, bottom, left)
 
       # You can access the actual face itself like this:
       face_image = vid_frame[top:bottom, left:right]

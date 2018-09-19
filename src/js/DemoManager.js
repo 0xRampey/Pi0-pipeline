@@ -14,6 +14,7 @@ function DemoManager(dispatcher) {
     dispatcher.subscribe('LongPress', this.onLongPress.bind(this))
     dispatcher.subscribe('Click', this.onClick.bind(this))
     dispatcher.subscribe('selectDemo',this.selectDemo.bind(this))
+    dispatcher.subscribe('unknownFace', this.unknownFace.bind(this))
 }
 
 DemoManager.prototype = {
@@ -29,6 +30,17 @@ DemoManager.prototype = {
                 mode: mode
             });
         },
+    
+    unknownFace : function () {
+        console.log("Setting onBoard state")
+        this.onBoardState = true
+        // Set timeout to disable it after 15 seconds
+        setTimeout(() => {
+            this.onBoardState = false
+            
+        }, 15000);
+
+    }, 
         
     onLongPress : function (_, meta) {
         // LongPress required only for object detection
@@ -39,6 +51,12 @@ DemoManager.prototype = {
             this.runDemo()
         } else {
             this.dispatcher.publish("stopTask")
+        }
+    }
+    else {
+        if(this.onBoardState) {
+            console.log('Recording going to start!')
+            this.dispatcher.publish('runTask', {name: 'recordName'})
         }
     }
 
