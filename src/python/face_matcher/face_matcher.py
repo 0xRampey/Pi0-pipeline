@@ -222,14 +222,14 @@ def array_to_human(arr):
         message = "I only found %d unknown faces" % (num_unknown)
     return message
 
+
 def add_face():
     while True:
         new_face = input("New face(s) found. Would you like to add a new person? (Y/n) \n")
         if new_face == 'Y':
             now = datetime.now()
             local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-            new_name = input("What is the person's name?: ")
-            path = "./unknown_faces/"+new_name+"/"
+            path = "./unknown_faces/"+"{}".format(len(os.listdir("./known_faces"))+1)+"/"
             try:  
                 os.mkdir(path)
             except OSError:  
@@ -237,12 +237,12 @@ def add_face():
             else:  
                 print ("Successfully created the directory %s " % path)
             for i in range(3,0,-1):
-                print("Taking picture in: ", i)
+                print("Taking pictures in: ", i)
                 time.sleep(1)
             for i in range(3):
                 now = datetime.now()
                 local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-                camera.capture("./unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png")
+                camera.capture("./unknown_faces/"+new_name+"/"+new_name+"-"+"{}".format(i)+".png")
                 time.sleep(1)
                 print("Picture successfully taken")
             if len(os.listdir("./unknown_faces")) == 1:
