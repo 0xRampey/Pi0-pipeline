@@ -21,6 +21,9 @@ DemoManager.prototype = {
     selectDemo: function(event, meta) {
         console.log("Demo selected!", meta)
         this.demoSelected = this.demos[meta.name]
+	var announce = meta.name + "  selected"
+	console.log(announce)
+	this.dispatcher.publish('playText', announce)
     },
 
     faceRecognitionStandalone : function (mode) {
@@ -38,6 +41,7 @@ DemoManager.prototype = {
         if (this.state === 'ContinuousDetection') {
             this.runDemo()
         } else {
+	    this.dispatcher.publish('playText', 'Going to stop demo')
             this.dispatcher.publish("stopTask")
         }
     }
@@ -52,6 +56,7 @@ DemoManager.prototype = {
 
     runDemo : function (mode) {
         console.log("Got request to run demo")
+	this.dispatcher.publish('playText', 'Going to run demo!')
         this.demoSelected(mode)
     },
 

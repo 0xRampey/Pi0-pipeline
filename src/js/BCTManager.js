@@ -5,17 +5,14 @@ function BCTManager(dispatcher) {
 }
 
 BCTManager.prototype.playText = function(_, metatext){
-	console.log('hi');
-	console.log(metatext);
-	filename = metatext
-	playfile = 'audio/'+ filename + '.wav'
-	const ls = spawn('espeak', ['-w', playfile, metatext]);
-
-	ls.stdout.on('close', function(code){
-		const lz = spawn('aplay', [playfile]);
-		lz.stdout.on('data', function(data){
-		});
-	});
+	//playfile = 'audio/'+ metatext + '.wav'
+	//const ls = spawn('espeak', ['-w', playfile, metatext]);
+	const speak = spawn('espeak', [metatext]);
+	//ls.stdout.on('close', function(code){
+		//const lz = spawn('aplay', [playfile]);
+		//lz.stdout.on('data', function(data){
+		//});
+	//});
 }
 
 module.exports = BCTManager

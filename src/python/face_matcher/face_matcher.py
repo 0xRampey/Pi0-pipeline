@@ -74,7 +74,7 @@ def extract_faces(vid_frame, face_locations):
       top, right, bottom, left = face_location
       print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
 
-      top, right, bottom, left = new_coord(top, right, bottom, left)
+      #top, right, bottom, left = new_coord(top, right, bottom, left)
 
 
       # You can access the actual face itself like this:
