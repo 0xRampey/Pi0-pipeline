@@ -12,6 +12,7 @@ import sys
 import os
 import face_recognition
 import pickle
+import time
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
 
@@ -214,13 +215,45 @@ def array_to_human(arr):
     if(known_faces):
         if(num_unknown):
             message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
+            add_face()
         else:
             message = "I found %s" % (known_faces)
     else:
         message = "I only found %d unknown faces" % (num_unknown)
     return message
 
-
+def add_face():
+    while True:
+        new_face = input("New face(s) found. Would you like to add a new person? (Y/n) \n")
+        if new_face == 'Y':
+            now = datetime.now()
+            local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+            new_name = input("What is the person's name?: ")
+            path = "./unknown_faces/"+new_name+"/"
+            try:  
+                os.mkdir(path)
+            except OSError:  
+                print ("Creation of the directory %s failed" % path)
+            else:  
+                print ("Successfully created the directory %s " % path)
+            for i in range(3,0,-1):
+                print("Taking picture in: ", i)
+                time.sleep(1)
+            for i in range(3):
+                now = datetime.now()
+                local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+                camera.capture("./unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png")
+                time.sleep(1)
+                print("Picture successfully taken")
+            if len(os.listdir("./unknown_faces")) == 1:
+                classifier = on_board_training("./unknown_faces",name=new_name, model_save_path=model_path)
+                move_files()
+            break
+        elif new_face == 'n':
+            print('Person not added')
+            break
+        else:
+            continue
 
 def initCamera():
     camera = picamera.PiCamera()
