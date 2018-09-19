@@ -242,7 +242,9 @@ def add_face():
             for i in range(3):
                 now = datetime.now()
                 local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-                camera.capture("./unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png")
+                image_name = "./unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png"
+                camera.capture(image_name)
+                print("imageUpload: ", image_name)
                 time.sleep(1)
                 print("Picture successfully taken")
             if len(os.listdir("./unknown_faces")) == 1:

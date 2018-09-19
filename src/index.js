@@ -5,6 +5,7 @@ var BCTManager = require('./js/BCTManager.js')
 var DemoManager = require('./js/DemoManager.js')
 var TaskManager = require('./js/TaskManager.js')
 var BluetoothManager = require('./js/BluetoothManager.js')
+var FirebaseManager = require('./js/FirebaseManager.js')
 
 // Let dispatcher submit any exceptions immediately
 dispatcher.immediateExceptions = true;
@@ -13,6 +14,7 @@ const BtnManager = new ButtonManager(dispatcher)
 const blueManager = new BluetoothManager(dispatcher)
 const demoManager = new DemoManager(dispatcher)
 const taskManager = new TaskManager(dispatcher)
+const firebaseManager = new FirebaseManager(dispatcher)
 
 // Make BCTManager optional
 try {

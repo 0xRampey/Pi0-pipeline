@@ -16,15 +16,22 @@ function TaskManager(dispatcher) {
     pyshell = new PythonShell('python_manager.py', options);
     pyshell.send("Test signal")
     pyshell.on('message', function (message) {
-console.log(message)
-        //Look for play messages so that they can be sent to BCTManager
-        if (message.startsWith('playMessage:')) {
 
-            message = message.split('playMessage: ')[1]
-console.log('This is going to be played!')
-console.log(message)
-            dispatcher.publish('playText', message)
-        }
+    console.log(message)
+            //Look for play messages so that they can be sent to BCTManager
+            if (message.startsWith('playMessage:')) {
+                message = message.split('playMessage: ')[1]
+                console.log('This is going to be played!')
+                console.log(message)
+                dispatcher.publish('playText', message)
+            }
+
+            //Look for imageUpload for directory paths to upload to Firebase
+            if (message.startsWith('imageUpload:')) {
+                fileName = message.split('imageUpload: ')[1]
+                console.log(fileName)
+                dispatcher.publish('imageUpload', fileName)
+            }
 
 
     });
