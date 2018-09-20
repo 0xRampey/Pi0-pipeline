@@ -6,7 +6,7 @@
 # ****************************************************************************
 
 # Detect objects on a LIVE camera feed using
-# Intel® Movidius™ Neural Compute Stick (NCS)
+# Intel Movidius Neural Compute Stick (NCS)
 # coding=utf-8
 
 
