@@ -14,13 +14,16 @@ import face_recognition
 import pickle
 import time
 import shutil
-import classifier_onboarding
+from face_matcher import classifier_onboarding
+from datetime import datetime
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
+
 
 BUTTON_GPIO_PIN = 24
 
 MODEL_PATH = 'python/face_matcher/models/knn_model.clf'
+TEST_MODEL_PATH = 'python/face_matcher/models/knn_model2.clf'
 
 CAMERA_INDEX = 0
 REQUEST_CAMERA_WIDTH = 640
@@ -196,8 +199,13 @@ def run_face_rec(camera, graph):
           face_enc_list.append(face_enc)
 
         prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
+        processed_pred = array_to_human(prediction)
+        print('playMessage: ' + processed_pred['message'])
+        if(processed_pred['num_unknown']):
+            print('Going to add unknown faces!')
+            add_face(camera, graph)
 
-        print('playMessage: ' + array_to_human(prediction))
+
 
       else:
         print("playMessage: No faces detected!")
@@ -215,24 +223,24 @@ def array_to_human(arr):
     if(known_faces):
         if(num_unknown):
             message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
-            add_face()
         else:
             message = "I found %s" % (known_faces)
     else:
         message = "I only found %d unknown faces" % (num_unknown)
-    return message
+    return { "message": message, "num_unknown": num_unknown }
 
-def add_face():
-    while True:
+def add_face(camera, graph):
+    # while True:
         new_face = input("New face(s) found. Would you like to add a new person? (Y/n) \n")
         if new_face == 'Y':
             now = datetime.now()
             local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
             new_name = input("What is the person's name?: ")
-            path = "./unknown_faces/"+new_name+"/"
+            path = "python/face_matcher/unknown_faces/"+new_name+"/"
             try:  
                 os.mkdir(path)
-            except OSError:  
+            except OSError:
+                print(OSError)  
                 print ("Creation of the directory %s failed" % path)
             else:  
                 print ("Successfully created the directory %s " % path)
@@ -242,29 +250,25 @@ def add_face():
             for i in range(3):
                 now = datetime.now()
                 local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-                camera.capture("./unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png")
+                camera.capture("python/face_matcher/unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png")
                 time.sleep(1)
                 print("Picture successfully taken")
-            if len(os.listdir("./unknown_faces")) == 1:
-                classifier = onboarding("./unknown_faces",graph=graph, name=new_name, model_save_path=model_path)
-                move_files()
-            break
-        elif new_face == 'n':
-            print('Person not added')
-            break
+            if len(os.listdir("python/face_matcher/unknown_faces")):
+                classifier = classifier_onboarding.onboarding("python/face_matcher/unknown_faces",graph=graph, name=new_name, model_save_path=MODEL_PATH)
+                move_files()         
         else:
-            continue
+            print('Person not added')
 
 def move_files():
     print("Training KNN classifier...")
-    if len(os.listdir("./unknown_faces")) == 0:
+    if len(os.listdir("python/face_matcher/unknown_faces")) == 0:
         print("Directory is empty")
         print('Model already exists')
     else:
-        unknown = os.listdir("./unknown_faces")
-        destination = "./known_faces"
+        unknown = os.listdir("python/face_matcher/unknown_faces")
+        destination = "python/face_matcher/known_faces"
         for f in unknown:
-            shutil.move("./unknown_faces"+'/'+f, destination)
+            shutil.move("python/face_matcher/unknown_faces"+'/'+f, destination)
             # print(os.path.join(directory, filename))
         print('All files moved')
 
@@ -316,4 +320,4 @@ def main(bool):
 
 # main entry point for program. we'll call main() to do what needs to be done.
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(True))

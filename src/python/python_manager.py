@@ -49,13 +49,11 @@ tasks = {"stopTask": stop_task,
 def processLine(line):
   # Remove all spaces present in the line
   line = "".join(line.split())
-  print('read input:', line)
   command = line.split('.')
   if(len(command) > 1):
     task, mode = (command[0], command[1])
   else:
     task, mode = (command[0], None)
-  print(task, mode)
   return (task, mode)
 
 

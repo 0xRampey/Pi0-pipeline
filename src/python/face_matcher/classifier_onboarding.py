@@ -1,12 +1,14 @@
 import math
 from sklearn import neighbors
-import numpy
+import numpy as np
 import os
+import cv2
 import sys
 import os.path
 import pickle
 import face_recognition
 from face_recognition.face_recognition_cli import image_files_in_folder
+# from face_matcher import run_inference
 
 class Unbuffered(object):
    def __init__(self, stream):
@@ -68,11 +70,13 @@ def onboarding(train_dir, graph, model_save_path=None, n_neighbors=None, knn_alg
                 else:
                     # Add face encoding for current image to the training set                 
                     #X.append(face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes)[0])
-
                     face = extract_faces(image, face_bounding_boxes)[0]
-                    encoding = run_inference(face, graph)
+                    resized_image = preprocess_image(face)
+                    encoding = run_inference(resized_image, graph)
                     X.append(encoding)
                     y.append(class_dir)
+                    print("x", X)
+                    print("y", y)
         # Save the face embeddings and just load them next time so they don't have to be created every time
         np.save('./face_embeddings/encodings.npy',X,allow_pickle=False)
         np.save('./face_embeddings/class_dir.npy',y,allow_pickle=False)
@@ -85,12 +89,12 @@ def onboarding(train_dir, graph, model_save_path=None, n_neighbors=None, knn_alg
         for name in y_temp:
             y.append(name)
 
-        if len(os.listdir("./unknown_faces")) != 0:
-            for class_dir in os.listdir("./unknown_faces"):
-                if not os.path.isdir(os.path.join("./unknown_faces", class_dir)):
+        if len(os.listdir("python/face_matcher/unknown_faces")) != 0:
+            for class_dir in os.listdir("python/face_matcher/unknown_faces"):
+                if not os.path.isdir(os.path.join("python/face_matcher/unknown_faces", class_dir)):
                     continue
                 # Loop through each training image for the current person
-                for img_path in image_files_in_folder(os.path.join("./unknown_faces", class_dir)):
+                for img_path in image_files_in_folder(os.path.join("python/face_matcher/unknown_faces", class_dir)):
                     image = face_recognition.load_image_file(img_path)
                     face_bounding_boxes = face_recognition.face_locations(image)
                     if len(face_bounding_boxes) != 1:
@@ -102,13 +106,13 @@ def onboarding(train_dir, graph, model_save_path=None, n_neighbors=None, knn_alg
                         # Add face encoding for current image to the training set                 
                         # X.append(face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes)[0])
                         face = extract_faces(image, face_bounding_boxes)[0]
-                        encoding = run_inference(face, graph)
+                        resized_image = preprocess_image(face)
+                        encoding = run_inference(resized_image, graph)
                         X.append(encoding)
                         y.append(class_dir)
             np.save('./face_embeddings/encodings.npy',X)
             np.save('./face_embeddings/class_dir.npy',y)
             print('New encodings saved')
-            print('x',X)
             print('y',y)
         
     # Determine how many neighbors to use for weighting in the KNN classifier
@@ -128,3 +132,60 @@ def onboarding(train_dir, graph, model_save_path=None, n_neighbors=None, knn_alg
             pickle.dump(knn_clf, f)
     print('Successfully trained knn')
     return knn_clf             
+
+# whiten an image
+
+
+def whiten_image(source_image):
+    source_mean = np.mean(source_image)
+    source_standard_deviation = np.std(source_image)
+    std_adjusted = np.maximum(
+        source_standard_deviation, 1.0 / np.sqrt(source_image.size))
+    whitened_image = np.multiply(np.subtract(
+        source_image, source_mean), 1 / std_adjusted)
+    return whitened_image
+
+# create a preprocessed image from the source image that matches the
+# network expectations and return it
+
+
+def preprocess_image(src):
+    # scale the image
+    NETWORK_WIDTH = 160
+    NETWORK_HEIGHT = 160
+    preprocessed_image = cv2.resize(src, (NETWORK_WIDTH, NETWORK_HEIGHT))
+
+    #whiten
+    preprocessed_image = whiten_image(preprocessed_image)
+
+    # return the preprocessed image
+    return preprocessed_image
+
+
+def run_inference(image_to_classify, facenet_graph):
+
+    # ***************************************************************
+    # Send the image to the NCS
+    # ***************************************************************
+    facenet_graph.LoadTensor(image_to_classify.astype(np.float16), None)
+
+    # ***************************************************************
+    # Get the result from the NCS
+    # ***************************************************************
+    output, userobj = facenet_graph.GetResult()
+
+    return output
+
+
+def extract_faces(vid_frame, face_locations):
+    face_img_list = []
+    for face_location in face_locations:
+
+       # Print the location of each face in this image
+      top, right, bottom, left = face_location
+      print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(
+          top, left, bottom, right))
+      # You can access the actual face itself like this:
+      face_image = vid_frame[top:bottom, left:right]
+      face_img_list.append(face_image)
+    return face_img_list
