@@ -203,7 +203,7 @@ def parseArgs():
 
     parser = argparse.ArgumentParser(
                          description="Detect objects on a LIVE camera feed using \
-                         Intel® Movidius™ Neural Compute Stick." )
+                         Intel Movidius Neural Compute Stick." )
 
     parser.add_argument( '-g', '--graph', type=str,
                          default='python/objectDetector/data/graph',
