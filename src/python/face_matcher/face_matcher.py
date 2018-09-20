@@ -175,7 +175,9 @@ def run_face_rec(camera, graph):
       print("Capturing image.")
       # Grab a single frame of video from the RPi camera as a np array
       camera.capture(pic, format="rgb")
-
+      counter = 0
+      camera.capture('./{}.jpg'.format(counter))
+      print('imageUpload: ', './0.jpg')
       print("Performing inference!")
 
       #Extract faces found in the image
