@@ -14,7 +14,7 @@ import face_recognition
 import pickle
 import time
 import shutil
-import classifier_onboarding
+# import classifier_onboarding
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
 
@@ -217,7 +217,7 @@ def array_to_human(arr):
     if(known_faces):
         if(num_unknown):
             message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
-            add_face()
+            #add_face()
         else:
             message = "I found %s" % (known_faces)
     else:
