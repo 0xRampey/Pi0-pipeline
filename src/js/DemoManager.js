@@ -21,7 +21,7 @@ DemoManager.prototype = {
 
     firebaseUpload: function(message){
         //call firebaseUpload here and pass in the message
-    }
+    },
 
     selectDemo: function(event, meta) {
         console.log("Demo selected!", meta)
