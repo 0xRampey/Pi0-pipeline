@@ -14,14 +14,10 @@ function DemoManager(dispatcher) {
     dispatcher.subscribe('LongPress', this.onLongPress.bind(this))
     dispatcher.subscribe('Click', this.onClick.bind(this))
     dispatcher.subscribe('selectDemo',this.selectDemo.bind(this))
-    dispatcher.subscribe('imageUpload',this.firebaseUpload.bind(this))
+
 }
 
 DemoManager.prototype = {
-
-    firebaseUpload: function(message){
-        //call firebaseUpload here and pass in the message
-    },
 
     selectDemo: function(event, meta) {
         console.log("Demo selected!", meta)

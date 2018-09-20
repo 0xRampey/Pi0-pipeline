@@ -25,7 +25,9 @@ catch(error) {
 }
 // dispatcher.publish('runDemo', {name: 'objectDetectionStandalone'});
 // // dispatcher.publish('runTask', { name: 'takePicture' });
-// dispatcher.subscribe('demoSelected', test);
+// dispatcher.subscribe('imageUpload', test);
+
+
 
 
 

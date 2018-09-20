@@ -17,21 +17,29 @@ const storage = new Storage({
 var bucket = storage.bucket('languagelearning-17d88.appspot.com');
 
 // Upload a local file to a new file to be created in your bucket.
-var data = process.argv.slice(2);
 
-function FirebaseManger(dispatcher){
+function FirebaseManager(dispatcher){
    this.dispatcher = dispatcher;
    this.dispatcher.subscribe('imageUpload', this.imageUpload);
-   function imageUpload(event, fileName){
-     bucket.upload(fileName, function(err, file) {
-     if (err) {
-        return console.log(err);
-      }
-     });
-     console.log('Upload finished');
-   }
+   console.log("Shoudl be inited", this.imageUpload)
+
+    
 }
 
+FirebaseManager.prototype = {
+
+    imageUpload : function (event, fileName) {
+      console.log("Fire got this")
+      bucket.upload(fileName, function (err, file) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log('Upload finished');
+
+      });
+      
+    }
+  }
 
 
-module.exports = FirebaseManger;
+module.exports = FirebaseManager;

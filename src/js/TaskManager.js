@@ -29,7 +29,6 @@ function TaskManager(dispatcher) {
             //Look for imageUpload for directory paths to upload to Firebase
             if (message.startsWith('imageUpload:')) {
                 fileName = message.split('imageUpload: ')[1]
-                console.log(fileName)
                 dispatcher.publish('imageUpload', fileName)
             }
 
