@@ -242,7 +242,7 @@ def add_face():
             for i in range(3):
                 now = datetime.now()
                 local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-                camera.capture("./unknown_faces/"+new_name+"/"+new_name+"-"+"{}".format(i)+".png")
+                camera.capture("./unknown_faces/"+"{}".format(len(os.listdir("./known_faces"))+1)+"/"+"{}".format(len(os.listdir("./known_faces"))+1)+"-"+"{}".format(i)+".png")
                 time.sleep(1)
                 print("Picture successfully taken")
             if len(os.listdir("./unknown_faces")) == 1:
