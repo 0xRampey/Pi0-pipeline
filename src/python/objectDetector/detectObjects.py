@@ -7,6 +7,8 @@
 
 # Detect objects on a LIVE camera feed using
 # Intel® Movidius™ Neural Compute Stick (NCS)
+# coding=utf-8
+
 
 import os
 import cv2
