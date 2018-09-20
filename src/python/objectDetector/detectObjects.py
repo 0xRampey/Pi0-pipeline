@@ -28,7 +28,7 @@ CONFIDANCE_THRESHOLD = 0.60 # 60% confidant
 
 ARGS = None
 # OpenCV object for video capture
-camera               = None
+camera = None
 cont_mode = True
 
 # ---- Step 1: Open the enumerated device and get a handle to it -------------
@@ -96,7 +96,8 @@ def infer_image( graph, img, frame, labels ):
     print( "I found these objects in "
             + " ( %.2f ms ):" % ( numpy.sum( inference_time ) ) )
 
-    detection_str=""        
+    detection_str=""
+    return (output)
 
     for i in range( 0, output_dict['num_detections'] ):
         print( "%3.1f%%\t" % output_dict['detection_scores_' + str(i)] 
@@ -179,12 +180,20 @@ def main(continous_mode = True):
         # Grab a single frame of video from the RPi camera as a np array
         camera.capture(frame, format="bgr")
         img = pre_process_image( frame )
-        infer_image( graph, img, frame, labels )
+        object_name = infer_image( graph, img, frame, labels )
+        fileName = "python/objectDetector/detected_images/" + object_name +".png"
+        cv2.imwrite(fileName,frame)
+        print("objectUpload: ",fileName)
+        write_to_file(fileName)
         if(not cont_mode):
             break 
     
     close_ncs_device( device, graph, camera )
     print("All resources released")
+
+def write_to_file(filename):
+    with open("object-filenames.txt", "a") as images:
+        images.write(filename+",\n")
 
 # ---- Define 'main' function as the entry point for this script -------------
 

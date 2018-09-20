@@ -176,8 +176,8 @@ def run_face_rec(camera, graph):
       # Grab a single frame of video from the RPi camera as a np array
       camera.capture(pic, format="rgb")
       counter = 0
-      camera.capture('./{}.jpg'.format(counter))
-      print('imageUpload: ./0.jpg')
+      # camera.capture('./Calvin_time.jpg'.format(counter))
+      # print('imageUpload: ./0.jpg')
       print("Performing inference!")
 
       #Extract faces found in the image
@@ -198,7 +198,9 @@ def run_face_rec(camera, graph):
           face_enc_list.append(face_enc)
 
         prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
-
+        cv2.save('{}.png'.format(prediction),pic)
+        write_to_file(prediction+".png")
+        print("faceUpload: ",prediction)
         print('playMessage: ' + array_to_human(prediction))
 
       else:
@@ -219,10 +221,15 @@ def array_to_human(arr):
             message = "I found %s and %d unknown faces" % (known_faces, num_unknown)
             #add_face()
         else:
+
             message = "I found %s" % (known_faces)
     else:
         message = "I only found %d unknown faces" % (num_unknown)
     return message
+
+def write_to_file(filename):
+    with open("face-filenames.txt", "a") as images:
+        images.write(filename+",\n")
 
 def add_face():
     while True:
@@ -232,6 +239,7 @@ def add_face():
             local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
             new_name = input("What is the person's name?: ")
             path = "./unknown_faces/"+new_name+"/"
+
             try:  
                 os.mkdir(path)
             except OSError:  
@@ -246,7 +254,7 @@ def add_face():
                 local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
                 image_name = "./unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png"
                 camera.capture(image_name)
-                print("imageUpload: ", image_name)
+                print("faceUpload: ", image_name)
                 time.sleep(1)
                 print("Picture successfully taken")
             if len(os.listdir("./unknown_faces")) == 1:
