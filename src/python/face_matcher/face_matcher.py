@@ -198,7 +198,7 @@ def run_face_rec(camera, graph):
           face_enc_list.append(face_enc)
 
         prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
-        cv2.save('{}.png'.format(prediction),pic)
+        cv2.imwrite('{}.png'.format(prediction),pic)
         write_to_file(prediction+".png")
         print("faceUpload: ",prediction)
         print('playMessage: ' + array_to_human(prediction))
