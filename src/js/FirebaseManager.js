@@ -36,7 +36,7 @@ FirebaseManager.prototype = {
         console.log('Upload finished');
 
       });
-      bucket.upload('python/src/face-filenames.txt', function (err, file) {
+      bucket.upload('face-filenames.txt', function (err, file) {
         if (err) {
           return console.log(err);
         }
@@ -53,7 +53,7 @@ FirebaseManager.prototype = {
         console.log('Upload finished');
 
       });
-      bucket.upload('python/src/object-filenames.txt', function (err, file) {
+      bucket.upload('object-filenames.txt', function (err, file) {
         if (err) {
           return console.log(err);
         }
