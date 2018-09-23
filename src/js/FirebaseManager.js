@@ -30,7 +30,7 @@ FirebaseManager.prototype = {
 
     faceUpload: function(event, fileName){
       console.log("faceUpload")
-      bucket.upload(fileName, { destination: "faceDetection/"+fileName }function (err, file) {
+      bucket.upload(fileName, { destination: "faceDetection/"+fileName },function (err, file) {
         if (err) {
           return console.log(err);
         }
@@ -47,7 +47,7 @@ FirebaseManager.prototype = {
     }
     objectUpload : function (event, fileName) {
       console.log("objectUpload")
-      bucket.upload(fileName,{ destination: "objectDetection/"+fileName } function (err, file) {
+      bucket.upload(fileName,{ destination: "objectDetection/"+fileName }, function (err, file) {
         if (err) {
           return console.log(err);
         }
