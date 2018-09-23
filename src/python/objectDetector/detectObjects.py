@@ -17,6 +17,8 @@ import numpy
 import ntpath
 import argparse
 import picamera
+from datetime import datetime
+
 
 import mvnc.mvncapi as mvnc
 

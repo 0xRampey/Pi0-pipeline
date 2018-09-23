@@ -15,6 +15,8 @@ import pickle
 import time
 import shutil
 # import classifier_onboarding
+from datetime import datetime
+
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
 
