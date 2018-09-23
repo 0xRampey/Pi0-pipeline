@@ -44,7 +44,7 @@ FirebaseManager.prototype = {
         console.log('face txt upload finished');
 
       });
-    }
+    },
     objectUpload : function (event, fileName) {
       console.log("objectUpload")
       bucket.upload(fileName,{ destination: "objectDetection/"+fileName }, function (err, file) {
@@ -61,7 +61,6 @@ FirebaseManager.prototype = {
         console.log('object txt upload finished');
 
       });
-      
     }
   }
 
