@@ -187,7 +187,7 @@ def main(continous_mode = True):
         object_name = infer_image( graph, img, frame, labels )
         now = datetime.now()
         local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-        fileName = "python/objectDetector/detected_images/" + object_name + "-" + local_time+".png"
+        fileName = "python/objectDetector/detected_images/" + object_name + "-" + local_time
         cv2.imwrite(fileName,frame)
         print("objectUpload: {}.png".format(fileName))
         write_to_file(fileName)

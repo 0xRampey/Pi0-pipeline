@@ -204,7 +204,7 @@ def run_face_rec(camera, graph):
         write_to_file('{}.png'.format(prediction[0]))
         now = datetime.now()
         local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-        print("faceUpload: {pred}-{time}.png".format(pred=prediction[0]),time=local_time)
+        print("faceUpload: {pred}-{time}.png".format(pred=prediction[0],time=local_time))
         print('playMessage: ' + array_to_human(prediction))
 
       else:
