@@ -183,7 +183,9 @@ def main(continous_mode = True):
         camera.capture(frame, format="bgr")
         img = pre_process_image( frame )
         object_name = infer_image( graph, img, frame, labels )
-        fileName = "python/objectDetector/detected_images/" + object_name +".png"
+        now = datetime.now()
+        local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+        fileName = "python/objectDetector/detected_images/" + object_name + "-" + local_time+".png"
         cv2.imwrite(fileName,frame)
         print("objectUpload: {}.png".format(fileName))
         write_to_file(fileName)
