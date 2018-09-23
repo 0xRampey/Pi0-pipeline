@@ -1,4 +1,5 @@
 
+
 var PythonShell = require('python-shell');
 var options = {
   mode: 'text',
@@ -27,9 +28,13 @@ function TaskManager(dispatcher) {
             }
 
             //Look for imageUpload for directory paths to upload to Firebase
-            if (message.startsWith('imageUpload:')) {
-                fileName = message.split('imageUpload: ')[1]
-                dispatcher.publish('imageUpload', fileName)
+            if (message.startsWith('faceUpload:')) {
+                fileName = message.split('faceUpload: ')[1]
+                dispatcher.publish('faceUpload', fileName)
+            }
+            if (message.startsWith('objectUpload:')) {
+                fileName = message.split('objectUpload: ')[1]
+                dispatcher.publish('objectUpload', fileName)
             }
 
 
