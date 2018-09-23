@@ -185,7 +185,7 @@ def main(continous_mode = True):
         object_name = infer_image( graph, img, frame, labels )
         fileName = "python/objectDetector/detected_images/" + object_name +".png"
         cv2.imwrite(fileName,frame)
-        print("objectUpload: ",fileName)
+        print("objectUpload: {}.png".format(fileName))
         write_to_file(fileName)
         if(not cont_mode):
             break 
