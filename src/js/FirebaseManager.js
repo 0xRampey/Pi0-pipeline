@@ -14,8 +14,7 @@ const storage = new Storage({
 
 
 // Reference an existing bucket.
-var face_bucket = storage.bucket('languagelearning-17d88.appspot.com');
-var object_bucket = storage.bucket()
+var bucket = storage.bucket('languagelearning-17d88.appspot.com');
 
 // Upload a local file to a new file to be created in your bucket.
 
