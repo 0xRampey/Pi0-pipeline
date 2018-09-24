@@ -40,7 +40,7 @@ FirebaseManager.prototype = {
         if (err) {
           return console.log(err);
         }
-        console.log('face txt upload finished');
+        console.log('face json upload finished');
 
       });
     },
@@ -53,11 +53,11 @@ FirebaseManager.prototype = {
         console.log('Upload finished');
 
       });
-      bucket.upload('object-filenames.txt', function (err, file) {
+      bucket.upload('object-filenames.json', function (err, file) {
         if (err) {
           return console.log(err);
         }
-        console.log('object txt upload finished');
+        console.log('object json upload finished');
 
       });
     }
