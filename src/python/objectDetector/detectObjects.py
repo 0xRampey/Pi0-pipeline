@@ -96,6 +96,8 @@ def infer_image( graph, img, frame, labels ):
                       CONFIDANCE_THRESHOLD, 
                       frame.shape )
 
+    print("Output dict:\n",output_dict)
+
     # Print the results (each image/frame may have multiple objects)
     print( "I found these objects in "
             + " ( %.2f ms ):" % ( numpy.sum( inference_time ) ) )
