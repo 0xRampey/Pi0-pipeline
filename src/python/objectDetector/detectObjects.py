@@ -18,7 +18,7 @@ import ntpath
 import argparse
 import picamera
 from datetime import datetime
-
+import time
 
 import mvnc.mvncapi as mvnc
 
@@ -132,17 +132,23 @@ def infer_image( graph, img, frame, labels ):
                        display_str=display_str )
     print( '\n' )
     print("Detection str",detection_str)
+    now = datetime.now()
+    local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+    fileName = "{detection_str}-{time}.png".format(object=object_name,time=local_time)
+    cv2.imwrite(fileName,frame)
+    print("objectUpload: {}".format(fileName))
+    write_to_file(fileName)
     if(not cont_mode):
         template_str = "playMessage: I found "
         if(detection_str):
             print(template_str + detection_str)
         else:
             print(template_str + "no objects.")
-    else:
+    # else:
         # If a display is available, show the image on which inference was performed
-        if 'DISPLAY' in os.environ:
-            cv2.imshow( 'NCS live inference', frame )
-            cv2.waitKey(5)
+        # if 'DISPLAY' in os.environ:
+        #     cv2.imshow( 'NCS live inference', frame )
+        #     cv2.waitKey(5)
 
 # ---- Step 5: Unload the graph and close the device -------------------------
 
@@ -193,6 +199,7 @@ def main(continous_mode = True):
         # cv2.imwrite(fileName,frame)
         # print("objectUpload: {}".format(fileName))
         # write_to_file(fileName)
+        time.sleep(10)
         if(not cont_mode):
             break 
     
