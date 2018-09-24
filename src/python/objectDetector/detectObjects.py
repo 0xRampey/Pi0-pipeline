@@ -11,6 +11,7 @@
 
 
 import os
+import json
 import cv2
 import sys
 import numpy
@@ -134,10 +135,10 @@ def infer_image( graph, img, frame, labels ):
     print("Detection str",detection_str)
     now = datetime.now()
     local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-    fileName = "{detection_str}-{time}.png".format(object=object_name,time=local_time)
+    fileName = "{object}-{time}.png".format(object=detection_str,time=local_time)
     cv2.imwrite(fileName,frame)
     print("objectUpload: {}".format(fileName))
-    write_to_file(fileName)
+    write_to_file(fileName, detection_str, output_dict)
     if(not cont_mode):
         template_str = "playMessage: I found "
         if(detection_str):
@@ -206,9 +207,20 @@ def main(continous_mode = True):
     close_ncs_device( device, graph, camera )
     print("All resources released")
 
-def write_to_file(filename):
-    with open("object-filenames.txt", "a") as images:
-        images.write(filename+",\n")
+def write_to_file(filename, detected_object, output_dict):
+    json_file = "object-filenames.json"
+    if not os.path.isfile(json_file):
+      with open(json_file, "w") as f:
+        f.write("{}")
+
+    with open(json_file, "r") as f:
+      data = json.load(f)
+
+    new_data = {filename: {detected_object: output_dict}}
+    data.update(new_data)
+
+    with open(json_file, "w") as f:
+      json.dump(data, f)
 
 # ---- Define 'main' function as the entry point for this script -------------
 
