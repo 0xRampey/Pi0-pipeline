@@ -187,12 +187,12 @@ def main(continous_mode = True):
         camera.capture(frame, format="bgr")
         img = pre_process_image( frame )
         object_name = infer_image( graph, img, frame, labels )
-        now = datetime.now()
-        local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-        fileName = "{object}-{time}.png".format(object=object_name,time=local_time)
-        cv2.imwrite(fileName,frame)
-        print("objectUpload: {}".format(fileName))
-        write_to_file(fileName)
+        # now = datetime.now()
+        # local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+        # fileName = "{object}-{time}.png".format(object=object_name,time=local_time)
+        # cv2.imwrite(fileName,frame)
+        # print("objectUpload: {}".format(fileName))
+        # write_to_file(fileName)
         if(not cont_mode):
             break 
     
