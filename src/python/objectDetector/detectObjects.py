@@ -96,14 +96,14 @@ def infer_image( graph, img, frame, labels ):
                       CONFIDANCE_THRESHOLD, 
                       frame.shape )
 
-    print("Output dict:\n",output_dict)
+    #print("Output dict:\n",output_dict)
 
     # Print the results (each image/frame may have multiple objects)
     print( "I found these objects in "
             + " ( %.2f ms ):" % ( numpy.sum( inference_time ) ) )
 
     detection_str=""
-    return (output)
+    #return (output)
 
     for i in range( 0, output_dict['num_detections'] ):
         print( "%3.1f%%\t" % output_dict['detection_scores_' + str(i)] 
@@ -131,7 +131,7 @@ def infer_image( graph, img, frame, labels ):
                        color=(255, 255, 0),
                        display_str=display_str )
     print( '\n' )
-    
+    print("Detection str",detection_str)
     if(not cont_mode):
         template_str = "playMessage: I found "
         if(detection_str):
