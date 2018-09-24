@@ -200,8 +200,8 @@ def run_face_rec(camera, graph):
           face_enc_list.append(face_enc)
 
         prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
-        cv2.imwrite('{}.png'.format(pred=prediction[0],time=local_time))
-        write_to_file('{}.png'.format(pred=prediction[0],time=local_time))
+        cv2.imwrite('{pred}-{time}.png'.format(pred=prediction[0],time=local_time))
+        write_to_file('{pred}-{time}.png'.format(pred=prediction[0],time=local_time))
         now = datetime.now()
         local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
         print("faceUpload: {pred}-{time}.png".format(pred=prediction[0],time=local_time))
