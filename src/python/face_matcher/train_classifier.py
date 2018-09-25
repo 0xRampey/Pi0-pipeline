@@ -7,9 +7,9 @@ import sys
 import os.path
 import pickle
 import face_recognition
-import classifier_onboarding
+
 from face_recognition.face_recognition_cli import image_files_in_folder
-from video_face_matcher import preprocess_image, whiten_image
+from face_matcher import preprocess_image, whiten_image
 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -47,7 +47,7 @@ def main():
 
 
     print("Training KNN classifier...")
-    classifier = onboarding(KNOWN_IMAGES_DIR, graph=graph, model_save_path="./models/knn_model.clf", n_neighbors=2)
+    classifier = train(KNOWN_IMAGES_DIR, graph=graph, model_save_path="./models/knn_model.clf", n_neighbors=2)
     print("Training complete!")
 
 
@@ -155,7 +155,6 @@ def extract_faces(vid_frame, face_locations):
       print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(
           top, left, bottom, right))
 
-      top, right, bottom, left = new_coord(top, right, bottom, left)
 
       # You can access the actual face itself like this:
       face_image = vid_frame[top:bottom, left:right]

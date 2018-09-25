@@ -7,6 +7,13 @@ var options = {
   scriptPath: 'python/',
 };
 
+const readline = require('readline');
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
 function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detectObjects}
     this.state = { demoRunning: false }
@@ -24,6 +31,29 @@ console.log(message)
 console.log('This is going to be played!')
 console.log(message)
             dispatcher.publish('playText', message)
+        }
+
+        if (message.startsWith('unknownFaces:')) {
+
+
+rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n", (answer) => {
+    console.log(`Received ${answer}`)
+    command = answer.split(' ')
+    console.log(command)
+    var query= ''
+    var name = ''
+    if (command.length > 1) {
+        query = command[0]
+        name = command[1]
+        console.log(query, name)
+    }
+    if(query == 'Y') {
+        console.log("Wofreofo")
+        pyshell.send('onBoard.'+name)
+    }            
+            });
+
+
         }
 
 

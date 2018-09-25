@@ -8,20 +8,15 @@ import os.path
 import pickle
 import face_recognition
 from face_recognition.face_recognition_cli import image_files_in_folder
-# from face_matcher import run_inference
+import shutil
+from datetime import datetime
+import time
+from mvnc import mvncapi as mvnc
+import picamera
 
-class Unbuffered(object):
-   def __init__(self, stream):
-       self.stream = stream
-   def write(self, data):
-       self.stream.write(data)
-       self.stream.flush()
-   def writelines(self, datas):
-       self.stream.writelines(datas)
-       self.stream.flush()
-   def __getattr__(self, attr):
-       return getattr(self.stream, attr)
-sys.stdout = Unbuffered(sys.stdout)
+GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
+MODEL_PATH = 'python/face_matcher/models/knn_model.clf'
+
 
 def onboarding(train_dir, graph, model_save_path=None, n_neighbors=None, knn_algo='ball_tree', verbose=False,name='unknown'):
     """
@@ -133,9 +128,16 @@ def onboarding(train_dir, graph, model_save_path=None, n_neighbors=None, knn_alg
     print('Successfully trained knn')
     return knn_clf             
 
+
+
+
+def initCamera():
+    camera = picamera.PiCamera()
+    camera.resolution = (320, 240)
+    print("Camera ready!")
+    return camera
+
 # whiten an image
-
-
 def whiten_image(source_image):
     source_mean = np.mean(source_image)
     source_standard_deviation = np.std(source_image)
@@ -189,3 +191,80 @@ def extract_faces(vid_frame, face_locations):
       face_image = vid_frame[top:bottom, left:right]
       face_img_list.append(face_image)
     return face_img_list
+
+
+def add_face(camera, graph, new_name):
+            now = datetime.now()
+            local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+            path = "python/face_matcher/unknown_faces/" + new_name + "/"
+            try:
+                os.mkdir(path)
+            except OSError:
+                print(OSError)
+                print("Creation of the directory %s failed" % path)
+            else:
+                print("Successfully created the directory %s " % path)
+            for i in range(3, 0, -1):
+                print("Taking picture in: ", i)
+                time.sleep(1)
+            for i in range(3):
+                now = datetime.now()
+                local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
+                camera.capture("python/face_matcher/unknown_faces/" +
+                               new_name + "/" + new_name + "_" + local_time + ".png")
+                time.sleep(1)
+                print("Picture successfully taken")
+            if len(os.listdir("python/face_matcher/unknown_faces")):
+                classifier = onboarding("python/face_matcher/unknown_faces", graph=graph, name=new_name, model_save_path=MODEL_PATH)
+                move_files()
+
+
+def move_files():
+    print("Moving files")
+    if len(os.listdir("python/face_matcher/unknown_faces")) == 0:
+        print("Directory is empty")
+        print('Model already exists')
+    else:
+        unknown = os.listdir("python/face_matcher/unknown_faces")
+        destination = "python/face_matcher/known_faces"
+        for f in unknown:
+            shutil.move("python/face_matcher/unknown_faces" +
+                        '/' + f, destination)
+            # print(os.path.join(directory, filename))
+        print('All files moved')
+
+def main(name):
+    # Get a list of ALL the sticks that are plugged in
+    # we need at least one
+    devices = mvnc.EnumerateDevices()
+    if len(devices) == 0:
+        print('No NCS devices found')
+        quit()
+
+    # Pick the first stick to run the network
+    device = mvnc.Device(devices[0])
+
+    print("Initializing NCS....")
+    # Open the NCS
+    device.OpenDevice()
+
+    # The graph file that was created with the ncsdk compiler
+    graph_file_name = GRAPH_FILENAME
+
+    # read in the graph file to memory buffer
+    with open(graph_file_name, mode='rb') as f:
+        graph_in_memory = f.read()
+
+    print("Loading graph file into NCS...")
+    # create the NCAPI graph instance from the memory buffer containing the graph file.
+    graph = device.AllocateGraph(graph_in_memory)
+
+    #Setting up camera and button trigger
+    camera = initCamera()
+
+    add_face(camera, graph, name)
+
+    # Clean up the graph and the device
+    camera.close()
+    graph.DeallocateGraph()
+    device.CloseDevice()

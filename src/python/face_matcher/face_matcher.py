@@ -13,9 +13,7 @@ import os
 import face_recognition
 import pickle
 import time
-import shutil
-from face_matcher import classifier_onboarding
-from datetime import datetime
+
 
 GRAPH_FILENAME = "python/face_matcher/facenet_celeb_ncs.graph"
 
@@ -79,9 +77,6 @@ def extract_faces(vid_frame, face_locations):
        # Print the location of each face in this image
       top, right, bottom, left = face_location
       print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left, bottom, right))
-
-      top, right, bottom, left = new_coord(top, right, bottom, left)
-
 
       # You can access the actual face itself like this:
       face_image = vid_frame[top:bottom, left:right]
@@ -202,10 +197,7 @@ def run_face_rec(camera, graph):
         processed_pred = array_to_human(prediction)
         print('playMessage: ' + processed_pred['message'])
         if(processed_pred['num_unknown']):
-            print('Going to add unknown faces!')
-            add_face(camera, graph)
-
-
+            print('unknownFaces: bleh')
 
       else:
         print("playMessage: No faces detected!")
@@ -228,49 +220,6 @@ def array_to_human(arr):
     else:
         message = "I only found %d unknown faces" % (num_unknown)
     return { "message": message, "num_unknown": num_unknown }
-
-def add_face(camera, graph):
-    # while True:
-        new_face = input("New face(s) found. Would you like to add a new person? (Y/n) \n")
-        if new_face == 'Y':
-            now = datetime.now()
-            local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-            new_name = input("What is the person's name?: ")
-            path = "python/face_matcher/unknown_faces/"+new_name+"/"
-            try:  
-                os.mkdir(path)
-            except OSError:
-                print(OSError)  
-                print ("Creation of the directory %s failed" % path)
-            else:  
-                print ("Successfully created the directory %s " % path)
-            for i in range(3,0,-1):
-                print("Taking picture in: ", i)
-                time.sleep(1)
-            for i in range(3):
-                now = datetime.now()
-                local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
-                camera.capture("python/face_matcher/unknown_faces/"+new_name+"/"+new_name+"_"+local_time+".png")
-                time.sleep(1)
-                print("Picture successfully taken")
-            if len(os.listdir("python/face_matcher/unknown_faces")):
-                classifier = classifier_onboarding.onboarding("python/face_matcher/unknown_faces",graph=graph, name=new_name, model_save_path=MODEL_PATH)
-                move_files()         
-        else:
-            print('Person not added')
-
-def move_files():
-    print("Training KNN classifier...")
-    if len(os.listdir("python/face_matcher/unknown_faces")) == 0:
-        print("Directory is empty")
-        print('Model already exists')
-    else:
-        unknown = os.listdir("python/face_matcher/unknown_faces")
-        destination = "python/face_matcher/known_faces"
-        for f in unknown:
-            shutil.move("python/face_matcher/unknown_faces"+'/'+f, destination)
-            # print(os.path.join(directory, filename))
-        print('All files moved')
 
 def initCamera():
     camera = picamera.PiCamera()

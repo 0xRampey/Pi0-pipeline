@@ -9,7 +9,8 @@ import time
 print("Loading task dependencies...")
 import take_pic
 from objectDetector import detectObjects
-from face_matcher import face_matcher 
+from face_matcher import face_matcher
+from face_matcher import classifier_onboarding
 # from multiprocessing import Process
 
 #Keeping and managing reference to only one thread at a time
@@ -29,7 +30,8 @@ def stop_task(thread):
 tasks = {"stopTask": stop_task, 
           "takePicture": take_pic.main, 
           "detectObjects": detectObjects.main,
-          "matchFaces": face_matcher.main}
+          "matchFaces": face_matcher.main,
+          "onBoard": classifier_onboarding.main}
 # def processLines(line):
 #   print('read input:', line)
 #   if line == "takePicture":
@@ -71,7 +73,10 @@ while(True):
             # Set continuous mode flag "off"
             taskFunc = lambda: tasks[task](False)
           else:
-            taskFunc = lambda: tasks[task](True)
+            if task == "onBoard":
+              taskFunc = lambda: tasks[task](mode)
+            else:
+              taskFunc = lambda: tasks[task](True)
           thread = threading.Thread(target=taskFunc)
           thread.run_state = True
           thread.start()
