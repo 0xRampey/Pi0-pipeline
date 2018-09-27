@@ -5,7 +5,6 @@ function BCTManager(dispatcher) {
 }
 
 BCTManager.prototype.playText = function(_, metatext){
-	console.log('hi');
 	console.log(metatext);
 	filename = metatext
 	playfile = 'audio/'+ filename + '.wav'

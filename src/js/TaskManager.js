@@ -7,6 +7,9 @@ var options = {
   scriptPath: 'python/',
 };
 
+var uniqid = require('uniqid');
+const {spawn} = require('child_process');
+
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -37,19 +40,17 @@ console.log(message)
 
 
 rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n", (answer) => {
-    console.log(`Received ${answer}`)
+
     command = answer.split(' ')
-    console.log(command)
-    var query= ''
-    var name = ''
-    if (command.length > 1) {
-        query = command[0]
-        name = command[1]
-        console.log(query, name)
-    }
+    var query= command[0]
+
+    // if (command.length > 1) {
+    //     query = command[0]
+    //     name = command[1]
+    //     console.log(query, name)
+    // }
     if(query == 'Y') {
-        console.log("Wofreofo")
-        pyshell.send('onBoard.'+name)
+        recordName()
     }            
             });
 
@@ -80,6 +81,29 @@ rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n"
     detectObjects = function (mode) {
         console.log("Sending message to pyshell now")
         pyshell.send('detectObjects.'+ mode)
+    }
+
+    recordName = function () {
+        let id = uniqid()
+        filename = id + '.wav'
+        fullPath = 'audio_recordings/' + filename
+        // Record and store wav file
+        let record = spawn('arecord', ['-D', 'plughw:1,0', fullPath, '-d', 3], {
+            stdio: [process.stdin, 'pipe', 'pipe']
+        });
+
+        // For some reason, stdout is being thrown as stderr
+        record.stderr.on('data', function (data) {
+            console.log("Speak now please...")
+        });
+
+        record.on('close', function (data) {
+            console.log("Recording done")
+            console.log("Going to onboard:", id)
+            pyshell.send('onBoard.' + id)
+
+        });
+        
     }
 
     runTask = function (_, data) {
