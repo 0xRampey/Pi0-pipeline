@@ -40,7 +40,7 @@ console.log(message)
         if (message.startsWith('unknownFaces:')) {
     
     dispatcher.publish('unknownFace')
-    dispatcher.publish('playText', 'New face found. Long press to add')
+    dispatcher.publish('playText', 'New face found. Long press to      add')
 
 
         }

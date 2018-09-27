@@ -204,17 +204,16 @@ def add_face(camera, graph, new_name):
                 print("Creation of the directory %s failed" % path)
             else:
                 print("Successfully created the directory %s " % path)
-            print('playMessage: Taking picture in')
-            for i in range(3, 0, -1):
-                print("playMessage: " + str(i))
-                time.sleep(1)
+            print('playMessage: Please angle the camera for a picture')
+            time.sleep(3)
             for i in range(3):
                 now = datetime.now()
                 local_time = now.strftime("%I-%M-%S_%Y-%d-%B")
                 camera.capture("python/face_matcher/unknown_faces/" +
                                new_name + "/" + new_name + "_" + local_time + ".png")
                 time.sleep(1)
-                print("Picture successfully taken")
+            print("playMessage: Pictures successfully taken!")
+
             if len(os.listdir("python/face_matcher/unknown_faces")):
                 classifier = onboarding("python/face_matcher/unknown_faces", graph=graph, name=new_name, model_save_path=MODEL_PATH)
                 print('playMessage: Onboarding complete!')

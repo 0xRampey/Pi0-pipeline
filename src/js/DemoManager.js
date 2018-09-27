@@ -34,11 +34,11 @@ DemoManager.prototype = {
     unknownFace : function () {
         console.log("Setting onBoard state")
         this.onBoardState = true
-        // Set timeout to disable it after 5 seconds
+        // Set timeout to disable it after 15 seconds
         setTimeout(() => {
             this.onBoardState = false
             
-        }, 9000);
+        }, 15000);
 
     }, 
         
