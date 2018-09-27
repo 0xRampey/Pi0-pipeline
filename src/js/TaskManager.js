@@ -20,6 +20,7 @@ const rl = readline.createInterface({
 function TaskManager(dispatcher) {
     this.tasks={ "takePicture": this.takePicture, "face_recognize": this.recognize_face, "object_detect": this.detectObjects}
     this.state = { demoRunning: false }
+    this.dispatcher = dispatcher
 
     console.log("Spawning Python shell...")
     //Spawn a python process to be ready to run tasks 
@@ -37,22 +38,9 @@ console.log(message)
         }
 
         if (message.startsWith('unknownFaces:')) {
-
-
-rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n", (answer) => {
-
-    command = answer.split(' ')
-    var query= command[0]
-
-    // if (command.length > 1) {
-    //     query = command[0]
-    //     name = command[1]
-    //     console.log(query, name)
-    // }
-    if(query == 'Y') {
-        recordName()
-    }            
-            });
+    
+    dispatcher.publish('unknownFace')
+    dispatcher.publish('playText', 'New face found. Long press to add')
 
 
         }
@@ -95,7 +83,8 @@ rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n"
         pyshell.send('detectObjects.'+ mode)
     }
 
-    recordName = function () {
+    recordName = () => {
+        let once = 0
         let id = uniqid()
         filename = id + '.wav'
         fullPath = 'audio_recordings/' + filename
@@ -105,8 +94,14 @@ rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n"
         });
 
         // For some reason, stdout is being thrown as stderr
-        record.stderr.on('data', function (data) {
-            console.log("Speak now please...")
+        record.stderr.on('data', (data) => {
+            once += 1
+            if( once === 1)
+            {
+                this.dispatcher.publish('playText', 'Please say the name now')
+
+            }
+            
         });
 
         record.on('close', function (data) {
@@ -129,6 +124,10 @@ rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n"
         if (data.name === 'takePicture') {
             console.log("Time to take a picture")
             this.takePicture()
+        }
+        if (data.name === 'recordName') {
+            console.log("Recording name...")
+            this.recordName(this)
         }
 
     }

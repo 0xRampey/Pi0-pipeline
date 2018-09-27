@@ -9,13 +9,7 @@ BCTManager.prototype.playText = function(_, metatext){
 	console.log(metatext);
 	filename = metatext
 	playfile = 'audio/'+ filename + '.wav'
-	const ls = spawn('espeak', ['-w', playfile, metatext]);
-
-	ls.stdout.on('close', function(code){
-		const lz = spawn('aplay', [playfile]);
-		lz.stdout.on('data', function(data){
-		});
-	});
+	const ls = spawn('espeak', [metatext]);
 }
 
 BCTManager.prototype.playRecording = function(_, metadata) {

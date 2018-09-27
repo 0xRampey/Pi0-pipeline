@@ -198,8 +198,8 @@ def run_face_rec(camera, graph):
         if(processed_pred['known_faces']):
             print('playRecording: ' + processed_pred['known_faces'])
             print(processed_pred['known_faces'])
-        else:
-            print('playMessage: ' + processed_pred['message'])
+        # else:
+        #     print('playMessage: ' + processed_pred['message'])
         
         if(processed_pred['num_unknown']):
             print('unknownFaces: bleh')
