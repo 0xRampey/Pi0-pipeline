@@ -56,6 +56,18 @@ rl.question("New face(s) found. If you would like to add a new person? (Y/n) \n"
 
 
         }
+        if (message.startsWith('playRecording:')) {
+
+
+           record_string = message.split('playRecording: ')[1]
+           record_files = record_string.split(',')
+           console.log("Files are", record_files)
+           // Remove last null string
+           record_files.pop()
+           dispatcher.publish('playRecording', {files: record_files})
+
+
+        }
 
 
     });

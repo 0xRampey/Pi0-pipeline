@@ -195,7 +195,12 @@ def run_face_rec(camera, graph):
 
         prediction = predict(face_enc_list, FACE_MATCH_THRESHOLD)
         processed_pred = array_to_human(prediction)
-        print('playMessage: ' + processed_pred['message'])
+        if(processed_pred['known_faces']):
+            print('playRecording: ' + processed_pred['known_faces'])
+            print(processed_pred['known_faces'])
+        else:
+            print('playMessage: ' + processed_pred['message'])
+        
         if(processed_pred['num_unknown']):
             print('unknownFaces: bleh')
 
@@ -219,7 +224,7 @@ def array_to_human(arr):
             message = "I found %s" % (known_faces)
     else:
         message = "I only found %d unknown faces" % (num_unknown)
-    return { "message": message, "num_unknown": num_unknown }
+    return { "message": message, "num_unknown": num_unknown, "known_faces": known_faces }
 
 def initCamera():
     camera = picamera.PiCamera()
